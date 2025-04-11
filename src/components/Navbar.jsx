@@ -17,14 +17,15 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 overflow-hidden ${
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
         scrolled
           ? "bg-[#0B0C20]/80 backdrop-blur-md shadow-md"
           : "bg-gradient-to-br from-[#0B0C20] to-[#1D1F3A]"
       }`}
     >
-    <div className="absolute inset-0 wave-bg" />
+      <div className="absolute inset-0 wave-bg" />
       <div className="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
+        {/* Logo */}
         <motion.div
           whileHover={{ scale: 1.1, rotate: 3 }}
           transition={{ type: "spring", stiffness: 300 }}
@@ -37,6 +38,7 @@ const Navbar = () => {
           </Link>
         </motion.div>
 
+        {/* Navigation Links */}
         <ul
           className={`md:flex gap-6 ${
             open ? "block" : "hidden"
@@ -47,24 +49,43 @@ const Navbar = () => {
           <li><Link to="/pricing" className="text-white hover:text-[#00C2FF]">Pricing</Link></li>
           <li><Link to="/docs" className="text-white hover:text-[#00C2FF]">Docs</Link></li>
           <li><Link to="/company" className="text-white hover:text-[#00C2FF]">Company</Link></li>
+
+          {/* Log In only for mobile menu */}
+          {open && (
+            <li className="md:hidden mt-3">
+              <Link
+                to="/login"
+                className="block w-full border border-[#00C2FF] px-4 py-2 rounded-xl text-white hover:bg-[#00C2FF] hover:text-black transition"
+              >
+                Log In
+              </Link>
+            </li>
+          )}
         </ul>
 
-        <div className="flex gap-4 items-center">
+        {/* Action Buttons - hidden below 550px */}
+        <div
+          className={`items-center gap-2 hidden md:flex ${
+            open ? "hidden" : "flex"
+          }`}
+        >
           <Link
             to="/login"
-            className="border border-[#00C2FF] px-6 py-2 rounded-xl font-medium text-white hover:bg-[#00C2FF] hover:text-black transition"
+            className="border border-[#00C2FF] px-4 py-2 rounded-xl font-medium text-white hover:bg-[#00C2FF] hover:text-black transition"
           >
             Log In
           </Link>
           <Link
             to="/free-trial"
-            className="bg-[#00C2FF] text-black px-6 py-2 rounded-xl font-medium hover:bg-white transition"
+            className="bg-[#00C2FF] text-black px-4 py-2 rounded-xl font-medium hover:bg-white transition"
           >
             Start Free
           </Link>
-          <div className="md:hidden cursor-pointer" onClick={() => setOpen(!open)}>
-            {open ? <X className="text-white" /> : <Menu className="text-white" />}
-          </div>
+        </div>
+
+        {/* Burger Icon */}
+        <div className="md:hidden cursor-pointer ml-3 z-50" onClick={() => setOpen(!open)}>
+          {open ? <X className="text-white" /> : <Menu className="text-white" />}
         </div>
       </div>
     </nav>

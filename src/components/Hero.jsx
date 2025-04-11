@@ -4,9 +4,11 @@ import { Link } from "react-router-dom";
 const Hero = () => {
   return (
     <section className="relative flex items-center   min-h-screen  overflow-hidden text-left py-28 px-8 bg-gradient-to-br from-[#0B0C20] to-[#1D1F3A]">
-      <div className="absolute inset-0 wave-bg" />
+       <div className="absolute inset-0 wave-bg" />
+
+
       <motion.div
-        className="max-w-5xl mx-auto"
+        className="max-w-5xl mx-auto relative z-10  md:text-left"
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
