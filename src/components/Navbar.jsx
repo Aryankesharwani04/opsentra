@@ -1,11 +1,17 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const location = useLocation(); // 👈 track route
+
+  // Close menu on route change
+  useEffect(() => {
+    setOpen(false); // 👈 auto close on route change
+  }, [location]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -23,7 +29,7 @@ const Navbar = () => {
           : "bg-gradient-to-br from-[#0B0C20] to-[#1D1F3A]"
       }`}
     >
-      <div className="absolute inset-0 wave-bg" />
+      {/* <div className="absolute inset-0 wave-bg" /> */}
       <div className="flex justify-between items-center px-6 py-4 max-w-7xl mx-auto">
         {/* Logo */}
         <motion.div
@@ -46,20 +52,30 @@ const Navbar = () => {
         >
           <li><Link to="/products" className="text-white hover:text-[#00C2FF]">Products</Link></li>
           <li><Link to="/solutions" className="text-white hover:text-[#00C2FF]">Solutions</Link></li>
-          <li><Link to="/pricing" className="text-white hover:text-[#00C2FF]">Pricing</Link></li>
+          <li><Link to="/why" className="text-white hover:text-[#00C2FF]">Why Opsentra? </Link></li>
           <li><Link to="/docs" className="text-white hover:text-[#00C2FF]">Docs</Link></li>
-          <li><Link to="/company" className="text-white hover:text-[#00C2FF]">Company</Link></li>
+          <li><Link to="/usecase" className="text-white hover:text-[#00C2FF]">Use Cases & Technology</Link></li>
 
           {/* Log In only for mobile menu */}
           {open && (
-            <li className="md:hidden mt-3">
-              <Link
-                to="/login"
-                className="block w-full border border-[#00C2FF] px-4 py-2 rounded-xl text-white hover:bg-[#00C2FF] hover:text-black transition"
-              >
-                Log In
-              </Link>
-            </li>
+            <>
+              <li className="md:hidden mt-3">
+                <Link
+                  to="/login"
+                  className="block w-full border border-[#00C2FF] px-4 py-2 rounded-xl text-white hover:bg-[#00C2FF] hover:text-black transition"
+                >
+                  Log In
+                </Link>
+              </li>
+              <li className="md:hidden mt-2">
+                <Link
+                  to="/free-trial"
+                  className="block w-full bg-[#00C2FF] text-black px-4 py-2 rounded-xl font-medium hover:bg-white transition"
+                >
+                  Start Free
+                </Link>
+              </li>
+            </>
           )}
         </ul>
 

@@ -7,9 +7,9 @@ const Footer = () => {
         <div>
           <h4 className="text-white font-bold mb-4">Company</h4>
           <ul>
-            <li><Link to="/" className="hover:text-white transition duration-200">About</Link></li>
-            <li><Link to="/" className="hover:text-white transition duration-200">Careers</Link></li>
-            <li><Link to="/" className="hover:text-white transition duration-200">Contact</Link></li>
+            <li><Link to="/about" className="hover:text-white transition duration-200">About</Link></li>
+            <li><Link to="/careers" className="hover:text-white transition duration-200">Careers</Link></li>
+            <li><Link to="/contact" className="hover:text-white transition duration-200">Contact</Link></li>
           </ul>
         </div>
         <div>
@@ -24,8 +24,8 @@ const Footer = () => {
           <h4 className="text-white font-bold mb-4">Resources</h4>
           <ul>
             <li><Link to="/" className="hover:text-white transition duration-200">Blog</Link></li>
-            <li><Link to="/" className="hover:text-white transition duration-200">Docs</Link></li>
-            <li><Link to="/" className="hover:text-white transition duration-200">Support</Link></li>
+            <li><Link to="/docs" className="hover:text-white transition duration-200">Docs</Link></li>
+            <li><Link to="/contact" className="hover:text-white transition duration-200">Support</Link></li>
           </ul>
         </div>
         <div>
