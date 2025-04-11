@@ -1,0 +1,102 @@
+@import "tailwindcss";
+
+
+ :root {
+      --primary-100:#0D6E6E;
+    --primary-200:#4a9d9c;
+    --primary-300:#afffff;
+    --accent-100:#FF3D3D;
+    --accent-200:#ffe0c8;
+    --text-100:#FFFFFF;
+    --text-200:#e0e0e0;
+    --bg-100:#0D1F2D;
+    --bg-200:#1d2e3d;
+    --bg-300:#354656;
+}
+/*
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+} */
+body {
+  color: black;
+  background-color: black;
+}
+/*
+h1 {
+  font-size: 3.2em;
+  line-height: 1.1;
+}
+
+ button {
+  border-radius: 8px;
+  border: 1px solid transparent;
+  padding: 0.6em 1.2em;
+  font-size: 1em;
+  font-weight: 500;
+  font-family: inherit;
+  background-color: #1a1a1a;
+  cursor: pointer;
+  transition: border-color 0.25s;
+}
+button:hover {
+  border-color: #646cff;
+}
+button:focus,
+button:focus-visible {
+  outline: 4px auto -webkit-focus-ring-color;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+} */
+@keyframes waveAnimation {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.wave-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  background: url("data:image/svg+xml,%3Csvg viewBox='0 0 1440 320' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%2300C2FF' fill-opacity='0.1' d='M0,224L48,224C96,224,192,224,288,208C384,192,480,160,576,154.7C672,149,768,171,864,176C960,181,1056,171,1152,176C1248,181,1344,203,1392,213.3L1440,224L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z' /%3E%3C/svg%3E");
+  background-repeat: repeat-x;
+  background-size: contain;
+  animation: waveAnimation 20s linear infinite;
+  z-index: 0;
+  opacity: 0.5;
+  pointer-events: none;
+}
