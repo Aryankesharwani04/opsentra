@@ -1,7 +1,7 @@
 import React from "react";
 import { motion } from "framer-motion";
 
-const FreeTrial = () => {
+const Freetrial = () => {
   return (
     <div className="mt-4 min-h-screen bg-[#0B0C20] flex items-center justify-center px-4 py-16">
       <motion.div
@@ -62,4 +62,4 @@ const FreeTrial = () => {
   );
 };
 
-export default FreeTrial;
+export default Freetrial;

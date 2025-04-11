@@ -1,6 +1,6 @@
 import React from 'react'
 
-function UseCase() {
+function Usecase() {
   return (
     <div>
       USE CASE
@@ -8,4 +8,4 @@ function UseCase() {
   )
 }
 
-export default UseCase;
+export default Usecase;
