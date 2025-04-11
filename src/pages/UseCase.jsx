@@ -1,6 +1,6 @@
 import React from 'react'
 
-function Usecase() {
+const Usecase = () => {
   return (
     <div>
       USE CASE
