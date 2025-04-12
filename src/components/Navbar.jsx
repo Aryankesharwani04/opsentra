@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { motion } from "framer-motion";
 
 const Navbar = () => {
@@ -50,7 +50,37 @@ const Navbar = () => {
             open ? "block" : "hidden"
           } absolute md:static top-16 left-0 w-full md:w-auto bg-gradient-to-br from-[#0B0C20] to-[#1D1F3A] md:bg-transparent px-6 py-4 md:p-0 rounded-xl md:rounded-none`}
         >
-          <li><Link to="/products" className="text-white hover:text-[#00C2FF]">Products</Link></li>
+          <li className="relative group">
+            <span className="cursor-pointer hover:text-[#00C2FF]">
+              Products
+            </span>
+            <ul className="absolute top-full left-0 bg-[#1D1F3A] border border-[#2c2f57] shadow-lg rounded-lg py-2 w-64 mt-2 z-50 opacity-0 invisible group-hover:visible group-hover:opacity-100 transition-all duration-200">
+              <li>
+                <Link
+                  to="/log-management"
+                  className="block px-4 py-2 hover:bg-[#00C2FF] hover:text-black transition duration-200"
+                >
+                  Log Management
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/infrastructure-monitoring"
+                  className="block px-4 py-2 hover:bg-[#00C2FF] hover:text-black transition duration-200"
+                >
+                  Infrastructure Monitoring
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/distributed-tracing"
+                  className="block px-4 py-2 hover:bg-[#00C2FF] hover:text-black transition duration-200"
+                >
+                  Distributed Tracing
+                </Link>
+              </li>
+            </ul>
+          </li>
           <li><Link to="/solutions" className="text-white hover:text-[#00C2FF]">Solutions</Link></li>
           <li><Link to="/why" className="text-white hover:text-[#00C2FF]">Why Opsentra? </Link></li>
           <li><Link to="/docs" className="text-white hover:text-[#00C2FF]">Docs</Link></li>

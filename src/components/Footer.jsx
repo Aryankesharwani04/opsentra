@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 
 const Footer = () => {
+  
   return (
     <footer className="bg-[#0B0B0E] text-sm text-gray-400 py-10 px-6">
       <div className="max-w-6xl mx-auto grid md:grid-cols-4 gap-8">
@@ -15,9 +16,9 @@ const Footer = () => {
         <div>
           <h4 className="text-white font-bold mb-4">Product</h4>
           <ul>
-            <li><Link to="/" className="hover:text-white transition duration-200">Log Management</Link></li>
-            <li><Link to="/" className="hover:text-white transition duration-200">Infrastructure Monitoring</Link></li>
-            <li><Link to="/" className="hover:text-white transition duration-200">SIEM</Link></li>
+            <li><Link to="/log-management" className="hover:text-white transition duration-200">Log Management</Link></li>
+            <li><Link to="/infrastructure-monitoring" className="hover:text-white transition duration-200">Infrastructure Monitoring</Link></li>
+            <li><Link to="/distributed-tracing" className="hover:text-white transition duration-200">Distributed Tracing</Link></li>
           </ul>
         </div>
         <div>

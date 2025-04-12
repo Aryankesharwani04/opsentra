@@ -2,7 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 
-const Login = () => {
+const Register = () => {
   return (
     <div className="min-h-screen bg-[#0B0C20] flex items-center justify-center px-4 py-16">
       <motion.div
@@ -12,9 +12,14 @@ const Login = () => {
         transition={{ duration: 0.5 }}
       >
         <h2 className="text-3xl font-extrabold text-center text-[#9DE2E2] mb-8">
-          Welcome Back
+          Create Your Account
         </h2>
         <form className="flex flex-col gap-6">
+          <input
+            type="text"
+            placeholder="Full Name"
+            className="bg-[#0B0C20] text-white border border-[#3A3D67] rounded-xl py-4 px-5 placeholder:text-[#9DE2E2] focus:outline-none focus:ring-2 focus:ring-[#9DE2E2]"
+          />
           <input
             type="email"
             placeholder="Email"
@@ -25,16 +30,23 @@ const Login = () => {
             placeholder="Password"
             className="bg-[#0B0C20] text-white border border-[#3A3D67] rounded-xl py-4 px-5 placeholder:text-[#9DE2E2] focus:outline-none focus:ring-2 focus:ring-[#9DE2E2]"
           />
+          <input
+            type="password"
+            placeholder="Confirm Password"
+            className="bg-[#0B0C20] text-white border border-[#3A3D67] rounded-xl py-4 px-5 placeholder:text-[#9DE2E2] focus:outline-none focus:ring-2 focus:ring-[#9DE2E2]"
+          />
+
           <button
             type="submit"
             className="bg-[#9DE2E2] text-black py-4 rounded-xl font-semibold hover:bg-white transition duration-300"
           >
-            Log In
+            Register
           </button>
+
           <div className="text-sm text-center text-[#9DE2E2]">
-            Don't have an account?{' '}
-            <Link to="/register" className="underline">
-              Create Account
+            Already have an account?{" "}
+            <Link to="/login" className="underline">
+              Log In
             </Link>
           </div>
         </form>
@@ -43,4 +55,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;
