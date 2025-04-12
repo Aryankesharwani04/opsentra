@@ -34,7 +34,7 @@ const RouteHandler = () => (
     <Route path="/why" element={<Why />} />
     <Route path="/docs" element={<Docs />} />
     <Route path="/careers" element={<Careers />} />
-    <Route path="/usecase" element={<Usecase />} />
+{/*     <Route path="/usecase" element={<Usecase />} /> */}
     <Route path="/free-trial" element={<Freetrial />} />
     <Route path="/login" element={<Login />} />
     <Route path="/register" element={<Register />} />
