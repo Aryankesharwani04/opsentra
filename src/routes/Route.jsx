@@ -44,6 +44,8 @@ const RouteHandler = () => (
     <Route path="/log-management" element={<Logmanagement />} />
     <Route path="/infrastructure-monitoring" element={<Infrastructure />} />
     <Route path="/distributed-tracing" element={<Distributed />} />
+    <Route path="/usecase" element={<Usecase />} />
+    {/* 404 Page */}
     <Route path="*" element={<h1>404 Not Found</h1>} />
 
 
