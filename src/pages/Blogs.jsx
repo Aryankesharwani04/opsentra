@@ -42,8 +42,8 @@ const Blogs = () => {
     ];
 
     return (
-        <section className="min-h-screen bg-[#0B0C20] text-white py-12 px-4 sm:px-6 lg:py-16">
-            <div className="max-w-7xl mx-auto">
+        <section className="min-h-screen bg-[#0B0C20] text-white py-12 px-4 sm:px-6 lg:py-16 ">
+            <div className="max-w-7xl mx-auto ">
                 {/* Blog Hero Section */}
                 <div className="flex flex-col lg:flex-row items-center gap-12 mb-16">
                     <div className="lg:w-1/2">
@@ -54,7 +54,7 @@ const Blogs = () => {
                             Insights, tutorials, and war stories from the frontline of DevOps observability.
                         </p>
                     </div>
-                    <div className="lg:w-1/2">
+                    <div className="lg:w-1/2 mt-8 pt-8 pl-8 pr-8">
                         <img
                             src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?ixlib=rb-1.2.1&auto=format&fit=crop&w=1000&q=80"
                             alt="DevOps visualization"

@@ -1,6 +1,6 @@
 const About = () => {
   return (
-    <section className="min-h-screen bg-[#0B0C20] text-white py-12 px-4 sm:px-6 lg:py-20">
+    <section className="mt-14 min-h-screen bg-[#0B0C20] text-white py-12 px-4 sm:px-6 lg:py-20">
       <div className="max-w-7xl mx-auto">
         {/* Hero Section with Image */}
         <div className="flex flex-col lg:flex-row items-center gap-12 mb-16">

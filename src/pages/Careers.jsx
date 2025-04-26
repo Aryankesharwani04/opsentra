@@ -32,7 +32,7 @@ const Careers = () => {
   ];
 
   return (
-    <section className="min-h-screen bg-[#0B0C20] text-white py-12 px-4 sm:px-6 lg:py-16">
+    <section className="mt-16 min-h-screen bg-[#0B0C20] text-white py-12 px-4 sm:px-6 lg:py-16">
       <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
         <div className="text-center mb-16">
@@ -72,7 +72,7 @@ const Careers = () => {
 
         {/* Open Positions */}
         <div className="mb-16">
-          <h2 className="text-3xl font-bold text-[#9DE2E2] mb-8 text-center">Potential Roles</h2>
+          <h2 className="text-4xl font-bold text-[#9DE2E2] mb-8 text-center">Potential Roles</h2>
           <div className="space-y-6">
             {openPositions.map((position, index) => (
               <div key={index} className="bg-[#1A1B2F] rounded-lg p-6 border border-[#2A2B45] hover:border-[#9DE2E2] transition duration-300">
@@ -96,7 +96,7 @@ const Careers = () => {
 
         {/* Benefits */}
         <div className="mb-16">
-          <h2 className="text-3xl font-bold text-[#9DE2E2] mb-8 text-center">Why Join Now?</h2>
+          <h2 className="text-4xl font-bold text-[#9DE2E2] mb-8 text-center">Why Join Now?</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {benefits.map((benefit, index) => (
               <div key={index} className="bg-[#1A1B2F] rounded-lg p-6 hover:bg-[#2A2B45] transition duration-300">
