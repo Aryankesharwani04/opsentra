@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import * as SimpleIcons from 'simple-icons';
 
 const useCases = [
   {
@@ -24,14 +25,25 @@ const useCases = [
   },
 ];
 
-const technologies = ["AWS", "Docker", "Linux", "Jenkins", "Kubernetes", "Node.js", "Nginx", "MongoDB"];
+const technologies = [
+  { name: "AWS", color: "#FF9900" },
+  { name: "Docker", color: "#2496ED" },
+  { name: "Linux", color: "#FCC624" },
+  { name: "Jenkins", color: "#D24939" },
+  { name: "Kubernetes", color: "#326CE5" },
+  { name: "Node.js", color: "#539E43" },
+  { name: "Nginx", color: "#009639" },
+  { name: "MongoDB", color: "#47A248" },
+];
 
 function Usecase() {
+  const duplicatedTech = [...technologies, ...technologies];
+
   return (
-    <section className="min-h-screen bg-gradient-to-br from-[#0B0C20] to-[#1D1F3A] text-white px-6 py-20">
-      <div className="max-w-6xl mx-auto">
+    <section className="min-h-screen bg-gradient-to-br from-[#0B0C20] to-[#1D1F3A] text-white px-6 py-20 overflow-hidden">
+      <div className="max-w-7xl mx-auto">
         <motion.h1
-          className="text-4xl font-bold mb-8 text-center text-[#9DE2E2]"
+          className="text-5xl font-bold mb-16 text-center text-[#9DE2E2]"
           initial={{ opacity: 0, y: -30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
@@ -39,40 +51,84 @@ function Usecase() {
           Real World Use Cases
         </motion.h1>
 
-        <div className="grid md:grid-cols-2 gap-10">
+        <div className="grid lg:grid-cols-2 gap-8 mb-24">
           {useCases.map((item, index) => (
             <motion.div
               key={item.title}
-              className="bg-[#13152D] border border-[#1F223A] rounded-lg p-6 hover:border-[#00C2FF] transition"
+              className="group relative bg-[#13152D] border-2 border-[#2A2B45] rounded-2xl p-8 hover:border-[#9DE2E2] transition-all duration-300 hover:-translate-y-2"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.2 }}
             >
-              <h3 className="text-xl font-semibold text-[#00C2FF] mb-2">
+              <div className="absolute inset-0 bg-gradient-to-br from-[#9DE2E2]/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <h3 className="text-2xl font-semibold text-[#9DE2E2] mb-4">
                 {item.title}
               </h3>
-              <p className="text-gray-300">{item.description}</p>
+              <p className="text-lg text-gray-300 leading-relaxed">
+                {item.description}
+              </p>
             </motion.div>
           ))}
         </div>
 
         <motion.div
-          className="mt-20 text-center"
+          className="mt-32"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl font-bold mb-6 text-[#9DE2E2]">Supported Technologies</h2>
-          <div className="flex flex-wrap justify-center gap-4 text-sm text-gray-200">
-            {technologies.map((tech) => (
-              <span
-                key={tech}
-                className="bg-[#1E213F] border border-[#2A2E4A] px-4 py-2 rounded-full hover:bg-[#00C2FF] hover:text-black transition"
-              >
-                {tech}
-              </span>
-            ))}
+          <h2 className="text-4xl font-bold mb-16 text-center text-[#9DE2E2]">
+            Supported Technologies
+          </h2>
+          
+          <div className="relative overflow-hidden py-6">
+            <div className="animate-marquee whitespace-nowrap">
+              {duplicatedTech.map((tech, idx) => {
+                const icon = SimpleIcons[`si${tech.name.replace(/\./g, 'dot').replace(/\s/g, '')}`];
+                return (
+                  <div
+                    key={idx}
+                    className="inline-flex items-center mx-10 opacity-90 hover:opacity-100 transition-all duration-300 group"
+                    style={{ width: '220px' }}
+                  >
+                    <svg
+                      role="img"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-12 w-12 mr-4 transition-transform duration-300 group-hover:scale-110"
+                      style={{ fill: tech.color }}
+                      dangerouslySetInnerHTML={{ __html: icon?.path }}
+                    />
+                    <span className="text-2xl font-medium text-gray-100 transition-colors duration-300 group-hover:text-white">
+                      {tech.name}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
+
+          <style jsx>{`
+            @keyframes marquee {
+              0% { transform: translateX(0); }
+              100% { transform: translateX(-50%); }
+            }
+            
+            .animate-marquee {
+              animation: marquee 40s linear infinite;
+              display: inline-block;
+            }
+
+            .animate-marquee:hover {
+              animation-play-state: paused;
+            }
+            
+            @media (prefers-reduced-motion: reduce) {
+              .animate-marquee {
+                animation: none;
+              }
+            }
+          `}</style>
         </motion.div>
       </div>
     </section>

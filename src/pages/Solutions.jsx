@@ -1,88 +1,239 @@
 import { motion } from "framer-motion";
+import { Terminal, Server, Users, AlertCircle } from "lucide-react";
+import * as SimpleIcons from 'simple-icons';
 
 const solutions = [
   {
     title: "AWS",
-    description:
-      "Integrate Opsentra with your AWS CloudWatch to centralize logs from EC2, Lambda, S3, and more. No more juggling dashboards across services.",
+    description: "Integrate Opsentra with your AWS CloudWatch to centralize logs from EC2, Lambda, S3, and more.",
+    icon: "AWS",
+    color: "#FF9900"
   },
   {
     title: "Docker",
-    description:
-      "Aggregate logs from all your Docker containers into one clean, searchable interface. Detect issues and monitor deployments easily.",
+    description: "Aggregate logs from all Docker containers into one clean, searchable interface.",
+    icon: "Docker",
+    color: "#2496ED"
   },
   {
     title: "Linux",
-    description:
-      "Centralize system logs from your Linux servers with real-time tracking and customizable filters for faster debugging and auditing.",
+    description: "Centralize system logs from Linux servers with real-time tracking and filters.",
+    icon: "Linux",
+    color: "#FCC624"
   },
   {
     title: "Jenkins",
-    description:
-      "Automatically pull logs from Jenkins pipelines and jobs. Get visibility into build failures, test reports, and CI/CD metrics.",
+    description: "Automatically pull logs from Jenkins pipelines and jobs for CI/CD visibility.",
+    icon: "Jenkins",
+    color: "#D24939"
   },
   {
     title: "Kubernetes",
-    description:
-      "Monitor pods, services, and node logs in a unified interface. Tail logs live and diagnose K8s issues with intelligent tagging.",
+    description: "Monitor pods, services, and node logs in a unified K8s interface.",
+    icon: "Kubernetes",
+    color: "#326CE5"
+  },
+  {
+    title: "Terraform",
+    description: "Track infrastructure changes and deployment logs across environments.",
+    icon: "Terraform",
+    color: "#7B42BC"
+  },
+];
+
+const personas = [
+  {
+    title: "Developers",
+    icon: <Terminal size={32} className="text-[#9DE2E2]" />,
+    description: "Debug faster with searchable logs and context-aware highlighting"
+  },
+  {
+    title: "SREs & DevOps",
+    icon: <Server size={32} className="text-[#9DE2E2]" />,
+    description: "Real-time infrastructure insights and automated alerting"
+  },
+  {
+    title: "Security Teams",
+    icon: <AlertCircle size={32} className="text-[#9DE2E2]" />,
+    description: "Audit trails and compliance monitoring with encrypted logging"
+  },
+  {
+    title: "Engineering Managers",
+    icon: <Users size={32} className="text-[#9DE2E2]" />,
+    description: "Team-wide visibility and performance analytics"
   },
 ];
 
 const Solutions = () => {
+  const duplicatedTech = [...solutions, ...solutions];
+
   return (
-    <section className="min-h-screen bg-gradient-to-br from-[#0B0C20] to-[#1D1F3A] text-white px-6 py-20">
-      <div className="max-w-6xl mx-auto text-center">
-        <motion.h1
-          className="text-4xl font-bold mb-4 text-[#9DE2E2]"
+    <section className="min-h-screen bg-gradient-to-br from-[#0B0C20] to-[#1D1F3A] text-white px-6 py-20 relative overflow-hidden">
+      <div className="max-w-7xl mx-auto">
+        {/* Hero Section */}
+        <motion.div 
+          className="text-center mb-20"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          Powerful Integrations for Unified Observability
-        </motion.h1>
-        <p className="text-lg text-gray-300 mb-10">
-          Opsentra unifies your logs from multiple platforms into a single pane of glass.
-        </p>
+          <h1 className="text-4xl md:text-5xl font-bold mb-6 text-[#9DE2E2]">
+            Unified Observability Platform
+          </h1>
+          <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+            Connect, analyze, and act on infrastructure logs across your entire stack
+          </p>
+        </motion.div>
 
-        <div className="grid md:grid-cols-2 gap-8 text-left">
-          {solutions.map((sol, index) => (
+        {/* Solutions Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-24">
+          {solutions.map((sol, index) => {
+            const icon = SimpleIcons[`si${sol.icon.replace(/\s/g, '')}`];
+            return (
+              <motion.div
+                key={sol.title}
+                className="group relative bg-[#13152D] border-2 border-[#2A2E4A] rounded-2xl p-8 hover:border-[#9DE2E2] transition-all duration-300 hover:-translate-y-2"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: index * 0.1, duration: 0.4 }}
+              >
+                <div className="flex items-start gap-6">
+                  <div className="flex-shrink-0">
+                    <svg
+                      role="img"
+                      viewBox="0 0 24 24"
+                      className="h-12 w-12"
+                      style={{ fill: sol.color }}
+                      dangerouslySetInnerHTML={{ __html: icon?.path }}
+                    />
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-semibold text-[#9DE2E2] mb-2">
+                      {sol.title}
+                    </h3>
+                    <p className="text-gray-300 leading-relaxed">
+                      {sol.description}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        {/* Personas Section */}
+        <motion.div 
+          className="mb-24"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+        >
+          <h2 className="text-4xl font-bold text-center mb-16 text-[#9DE2E2]">
+            Built For Modern Teams
+          </h2>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {personas.map((persona, index) => (
+              <div 
+                key={persona.title}
+                className="bg-[#13152D] border-2 border-[#2A2E4A] rounded-2xl p-8"
+              >
+                <div className="mb-4 text-[#9DE2E2]">{persona.icon}</div>
+                <h3 className="text-2xl font-semibold mb-2">{persona.title}</h3>
+                <p className="text-gray-300">{persona.description}</p>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Integrations Marquee */}
+        <motion.div 
+          className="mb-24"
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          transition={{ duration: 1 }}
+        >
+          <h2 className="text-3xl font-bold text-center mb-12 text-[#9DE2E2]">
+            Supported Technologies
+          </h2>
+          <div className="relative overflow-hidden py-6">
+            <div className="animate-marquee whitespace-nowrap">
+              {duplicatedTech.map((tech, idx) => {
+                const icon = SimpleIcons[`si${tech.icon.replace(/\s/g, '')}`];
+                return (
+                  <div
+                    key={idx}
+                    className="inline-flex items-center mx-10 opacity-90 hover:opacity-100 transition-all duration-300 group"
+                    style={{ width: '220px' }}
+                  >
+                    <svg
+                      role="img"
+                      viewBox="0 0 24 24"
+                      className="h-12 w-12 mr-4 transition-transform duration-300 group-hover:scale-110"
+                      style={{ fill: tech.color }}
+                      dangerouslySetInnerHTML={{ __html: icon?.path }}
+                    />
+                    <span className="text-2xl font-medium text-gray-100">
+                      {tech.title}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* CTA Section */}
+        <motion.div 
+          className="text-center"
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <h2 className="text-4xl font-bold mb-6 text-[#9DE2E2]">
+            Ready to Unify Your Observability?
+          </h2>
+          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+            Join thousands of engineers who've transformed their logging workflow with Opsentra
+          </p>
+          <div className="flex justify-center gap-6">
+          </div>
+        </motion.div>
+
+        {/* Background Elements */}
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+          {[...Array(8)].map((_, i) => (
             <motion.div
-              key={sol.title}
-              className="bg-[#13152D] p-6 rounded-lg border border-[#1E213F] hover:border-[#00C2FF] transition"
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: index * 0.1 }}
-            >
-              <h3 className="text-xl font-semibold text-[#00C2FF] mb-2">
-                {sol.title}
-              </h3>
-              <p className="text-gray-300">{sol.description}</p>
-            </motion.div>
+              key={i}
+              className="absolute border border-[#2A2E4A] rounded-full"
+              style={{
+                width: Math.random() * 100 + 50,
+                height: Math.random() * 100 + 50,
+                left: Math.random() * 100 + '%',
+                top: Math.random() * 100 + '%',
+              }}
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.1, 0.2, 0.1],
+              }}
+              transition={{
+                duration: Math.random() * 5 + 5,
+                repeat: Infinity,
+                ease: "linear",
+              }}
+            />
           ))}
         </div>
-
-        <div className="mt-16">
-          <motion.h2
-            className="text-2xl font-bold mb-4 text-[#9DE2E2]"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-          >
-            Who is it for?
-          </motion.h2>
-          <ul className="text-gray-300 list-disc list-inside space-y-2">
-            <li>
-              <strong>Developers</strong> – Debug faster with searchable logs across your full stack.
-            </li>
-            <li>
-              <strong>SREs & DevOps</strong> – Get real-time infrastructure insights and trigger alerts.
-            </li>
-            <li>
-              <strong>Startups & Enterprises</strong> – Monitor and secure environments with zero friction.
-            </li>
-          </ul>
-        </div>
       </div>
+
+      <style jsx>{`
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+          animation: marquee 40s linear infinite;
+        }
+      `}</style>
     </section>
   );
 };
