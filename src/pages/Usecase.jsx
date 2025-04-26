@@ -40,7 +40,7 @@ function Usecase() {
   const duplicatedTech = [...technologies, ...technologies];
 
   return (
-    <section className="min-h-screen bg-gradient-to-br from-[#0B0C20] to-[#1D1F3A] text-white px-6 py-20 overflow-hidden">
+    <section className="mt-8 min-h-screen bg-gradient-to-br from-[#0B0C20] to-[#1D1F3A] text-white px-6 py-20 overflow-hidden">
       <div className="max-w-7xl mx-auto">
         <motion.h1
           className="text-5xl font-bold mb-16 text-center text-[#9DE2E2]"

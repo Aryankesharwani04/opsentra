@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const Docs = () => {
   // Integration features
   const integrations = [
@@ -93,7 +95,7 @@ const Docs = () => {
   ];
 
   return (
-    <section className="min-h-screen bg-[#0B0C20] text-white py-12 px-4 sm:px-6 lg:py-16">
+    <section className="mt-8 min-h-screen bg-[#0B0C20] text-white py-12 px-4 sm:px-6 lg:py-16">
       <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
         <div className="mb-16">
@@ -125,7 +127,7 @@ const Docs = () => {
           <div className="grid md:grid-cols-3 gap-8 mb-12">
             <div className="bg-[#1A1B2F] rounded-xl p-6 border border-[#2A2B45]">
               <div className="text-3xl mb-4">1</div>
-              <h3 className="text-xl font-semibold mb-3">Create Account</h3>
+              <Link to="/login" className="hover:text-[#9DE2E2]"><h3 className="text-xl font-semibold mb-3">Create Account</h3></Link>
               <p className="text-gray-300">
                 Sign up for Opsentra and create your organization.
               </p>

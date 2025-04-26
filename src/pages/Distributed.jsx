@@ -4,14 +4,14 @@ import { FaBug, FaProjectDiagram, FaMapMarkedAlt, FaBell, FaClock, FaCodeBranch,
 
 const Distributed = () => {
   return (
-    <div className="min-h-screen bg-[#0B0C20] text-white px-6 py-16">
+    <div className="mt-8 min-h-screen bg-[#0B0C20] text-white px-6 py-16">
       <motion.div
         className="max-w-6xl mx-auto"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}
       >
-        <h1 className="text-4xl font-bold text-[#9DE2E2] mb-8 text-center">
+        <h1 className="text-5xl font-bold text-[#9DE2E2] mb-8 text-center">
           Distributed Tracing
         </h1>
         <p className="text-lg text-center text-gray-300 mb-16">
@@ -68,12 +68,12 @@ const Distributed = () => {
           </motion.div>
         </div>
 
-        <div className="mt-16 text-center">
+        {/* <div className="mt-16 text-center">
           <img src="/tracing-diagram.png" alt="Tracing Architecture Diagram" className="mx-auto max-w-full rounded-xl border border-[#3A3D67] shadow-lg" />
           <p className="text-sm text-gray-500 mt-4">
             * Diagram showcasing service-to-service tracing and latency detection.
           </p>
-        </div>
+        </div> */}
       </motion.div>
     </div>
   );

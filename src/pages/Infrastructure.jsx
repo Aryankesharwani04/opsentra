@@ -43,9 +43,9 @@ const features = [
 
 const Infrastructure = () => {
   return (
-    <div className="bg-[#0B0C20] text-white min-h-screen px-6 py-20">
+    <div className="mt-6 bg-[#0B0C20] text-white min-h-screen px-6 py-20">
       <motion.h2
-        className="text-4xl font-bold text-center text-[#9DE2E2] mb-14"
+        className="text-5xl font-bold text-center text-[#9DE2E2] mb-14"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -74,7 +74,7 @@ const Infrastructure = () => {
         ))}
       </div>
 
-      <div className="mt-20 flex justify-center">
+      {/* <div className="mt-20 flex justify-center">
         <motion.img
           src="/infrastructure-diagram.png"
           alt="Infrastructure Diagram"
@@ -84,7 +84,7 @@ const Infrastructure = () => {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         />
-      </div>
+      </div> */}
     </div>
   );
 };

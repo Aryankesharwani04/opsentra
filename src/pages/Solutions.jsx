@@ -68,7 +68,7 @@ const Solutions = () => {
   const duplicatedTech = [...solutions, ...solutions];
 
   return (
-    <section className="min-h-screen bg-gradient-to-br from-[#0B0C20] to-[#1D1F3A] text-white px-6 py-20 relative overflow-hidden">
+    <section className="mt-4 min-h-screen bg-gradient-to-br from-[#0B0C20] to-[#1D1F3A] text-white px-6 py-20 relative overflow-hidden">
       <div className="max-w-7xl mx-auto">
         {/* Hero Section */}
         <motion.div 

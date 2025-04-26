@@ -42,7 +42,7 @@ const features = [
 
 const Logmanagement = () => {
   return (
-    <div className="bg-[#0B0C20] text-white py-20 px-4 md:px-20">
+    <div className="mt-8 bg-[#0B0C20] text-white py-20 px-4 md:px-20">
       <motion.h1
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -68,13 +68,13 @@ const Logmanagement = () => {
         ))}
       </div>
 
-      <div className="mt-20 flex justify-center">
+      {/* <div className="mt-20 flex justify-center">
         <img
           src="https://www.svgrepo.com/show/416500/server-data-connection.svg"
           alt="Log Flow Diagram"
           className="w-full max-w-3xl"
         />
-      </div>
+      </div> */}
     </div>
   );
 };
