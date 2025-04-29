@@ -18,7 +18,8 @@ import Logmanagement from "../pages/Logmanagement";
 import Infrastructure from "../pages/Infrastructure";
 import Distributed from "../pages/Distributed";
 import Blogs from "../pages/Blogs";
-import FAQs from "../pages/faq";
+import Faq from "../pages/faq";
+
 const RouteHandler = () => (
   <Routes>
     <Route
@@ -48,7 +49,9 @@ const RouteHandler = () => (
     <Route path="/distributed-tracing" element={<Distributed />} />
     <Route path="/usecase" element={<Usecase />} />
     <Route path="/blogs" element={<Blogs/>} />
-    <Route path="/faq" element={<FAQs/>} />
+    <Route path="/Faq" element={<Faq/>}/>
+
+
     {/* 404 Page */}
     <Route path="*" element={<h1>404 Not Found</h1>} />
 

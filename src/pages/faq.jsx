@@ -73,7 +73,7 @@ const faqCategories = [
     }
 ];
 
-const FAQ = () => {
+const Faq = () => {
     return (
         <section className="min-h-screen bg-gradient-to-br from-[#0B0C20] to-[#1D1F3A] text-white py-20 px-6">
             <div className="max-w-6xl mx-auto">
@@ -156,4 +156,4 @@ const FAQ = () => {
     );
 };
 
-export default FAQ;
+export default Faq;
