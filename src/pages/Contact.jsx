@@ -38,15 +38,7 @@ const ContactSupport = () => {
             </p>
             <div className="space-y-3">
               <a 
-                href="https://discord.gg/your-invite-link" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-flex items-center justify-center w-full bg-[#5865F2] hover:bg-[#4752C4] text-white font-semibold py-3 px-6 rounded-lg transition duration-300"
-              >
-                Join Our Discord
-              </a>
-              <a 
-                href="https://github.com/your-repo" 
+                href="https://github.com/Aryankesharwani04/opsentra" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center w-full bg-[#333] hover:bg-[#222] text-white font-semibold py-3 px-6 rounded-lg transition duration-300"
@@ -81,7 +73,7 @@ const ContactSupport = () => {
         </div>
 
         {/* Additional Contact Info */}
-        <div className="max-w-4xl mx-auto bg-[#1A1B2F] rounded-xl p-8 border border-[#2A2B45]">
+        {/* <div className="max-w-4xl mx-auto bg-[#1A1B2F] rounded-xl p-8 border border-[#2A2B45]">
           <h2 className="text-2xl font-bold text-[#9DE2E2] mb-6 text-center">Other Ways to Connect</h2>
           <div className="grid sm:grid-cols-2 gap-8">
             <div>
@@ -121,7 +113,7 @@ const ContactSupport = () => {
               </a>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );
