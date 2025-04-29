@@ -1,3 +1,5 @@
+import React from 'react';
+import { Link } from 'react-router-dom';
 const ContactSupport = () => {
   return (
     <section className="mt-8 min-h-screen bg-[#0B0C20] text-white py-12 px-4 sm:px-6 lg:py-16">
@@ -37,12 +39,12 @@ const ContactSupport = () => {
               Check out our documentation and FAQs for self-service help.
             </p>
             <div className="space-y-3">
-              <a 
-                href="/docs" 
+              <Link 
+                to="/docs" 
                 className="inline-flex items-center justify-center w-full bg-[#9DE2E2] hover:bg-[#7acccc] text-[#0B0C20] font-semibold py-3 px-6 rounded-lg transition duration-300"
               >
                 Documentation
-              </a>
+              </Link>
               <a 
                 href="/faq" 
                 className="inline-flex items-center justify-center w-full bg-[#2A2B45] hover:bg-[#3A3B55] text-white font-semibold py-3 px-6 rounded-lg transition duration-300"
