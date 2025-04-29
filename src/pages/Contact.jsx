@@ -29,6 +29,29 @@ const ContactSupport = () => {
             </a>
           </div>
 
+          {/* Documentation Card */}
+          <div className="bg-[#1A1B2F] rounded-xl p-8 border border-[#2A2B45] hover:border-[#9DE2E2] transition duration-300">
+            <div className="text-3xl mb-4">📚</div>
+            <h2 className="text-2xl font-bold text-[#9DE2E2] mb-4">Resources</h2>
+            <p className="text-gray-300 mb-6">
+              Check out our documentation and FAQs for self-service help.
+            </p>
+            <div className="space-y-3">
+              <a 
+                href="/docs" 
+                className="inline-flex items-center justify-center w-full bg-[#9DE2E2] hover:bg-[#7acccc] text-[#0B0C20] font-semibold py-3 px-6 rounded-lg transition duration-300"
+              >
+                Documentation
+              </a>
+              <a 
+                href="/faq" 
+                className="inline-flex items-center justify-center w-full bg-[#2A2B45] hover:bg-[#3A3B55] text-white font-semibold py-3 px-6 rounded-lg transition duration-300"
+              >
+                FAQ Center
+              </a>
+            </div>
+          </div>
+
           {/* Community Card */}
           <div className="bg-[#1A1B2F] rounded-xl p-8 border border-[#2A2B45] hover:border-[#9DE2E2] transition duration-300">
             <div className="text-3xl mb-4">💬</div>
@@ -41,35 +64,13 @@ const ContactSupport = () => {
                 href="https://github.com/Aryankesharwani04/opsentra" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center w-full bg-[#333] hover:bg-[#222] text-white font-semibold py-3 px-6 rounded-lg transition duration-300"
+                className="inline-flex items-center justify-center w-full bg-[#9DE2E2] hover:bg-[#7acccc] text-[#0B0C20] font-semibold py-3 px-6 rounded-lg transition duration-300"
               >
                 GitHub Discussions
               </a>
             </div>
           </div>
 
-          {/* Documentation Card */}
-          <div className="bg-[#1A1B2F] rounded-xl p-8 border border-[#2A2B45] hover:border-[#9DE2E2] transition duration-300">
-            <div className="text-3xl mb-4">📚</div>
-            <h2 className="text-2xl font-bold text-[#9DE2E2] mb-4">Resources</h2>
-            <p className="text-gray-300 mb-6">
-              Check out our documentation and FAQs for self-service help.
-            </p>
-            <div className="space-y-3">
-              <a 
-                href="/docs" 
-                className="inline-flex items-center justify-center w-full bg-[#2A2B45] hover:bg-[#3A3B55] text-white font-semibold py-3 px-6 rounded-lg transition duration-300"
-              >
-                Documentation
-              </a>
-              <a 
-                href="/faq" 
-                className="inline-flex items-center justify-center w-full bg-[#2A2B45] hover:bg-[#3A3B55] text-white font-semibold py-3 px-6 rounded-lg transition duration-300"
-              >
-                FAQ Center
-              </a>
-            </div>
-          </div>
         </div>
 
         {/* Additional Contact Info */}
