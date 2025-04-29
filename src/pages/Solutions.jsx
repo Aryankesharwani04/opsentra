@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { Terminal, Server, Users, AlertCircle } from "lucide-react";
 import * as SimpleIcons from 'simple-icons';
+import Logos from '../components/Logos'; // 🔥 Update the path as you will provide
 
 const solutions = [
   {
@@ -65,11 +66,10 @@ const personas = [
 ];
 
 const Solutions = () => {
-  const duplicatedTech = [...solutions, ...solutions];
-
   return (
     <section className="mt-4 min-h-screen bg-gradient-to-br from-[#0B0C20] to-[#1D1F3A] text-white px-6 py-20 relative overflow-hidden">
       <div className="max-w-7xl mx-auto">
+
         {/* Hero Section */}
         <motion.div 
           className="text-center mb-20"
@@ -132,7 +132,7 @@ const Solutions = () => {
             Built For Modern Teams
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {personas.map((persona, index) => (
+            {personas.map((persona) => (
               <div 
                 key={persona.title}
                 className="bg-[#13152D] border-2 border-[#2A2E4A] rounded-2xl p-8"
@@ -145,7 +145,7 @@ const Solutions = () => {
           </div>
         </motion.div>
 
-        {/* Integrations Marquee */}
+        {/* Logos Container Integration */}
         <motion.div 
           className="mb-24"
           initial={{ opacity: 0 }}
@@ -155,31 +155,10 @@ const Solutions = () => {
           <h2 className="text-3xl font-bold text-center mb-12 text-[#9DE2E2]">
             Supported Technologies
           </h2>
-          <div className="relative overflow-hidden py-6">
-            <div className="animate-marquee whitespace-nowrap">
-              {duplicatedTech.map((tech, idx) => {
-                const icon = SimpleIcons[`si${tech.icon.replace(/\s/g, '')}`];
-                return (
-                  <div
-                    key={idx}
-                    className="inline-flex items-center mx-10 opacity-90 hover:opacity-100 transition-all duration-300 group"
-                    style={{ width: '220px' }}
-                  >
-                    <svg
-                      role="img"
-                      viewBox="0 0 24 24"
-                      className="h-12 w-12 mr-4 transition-transform duration-300 group-hover:scale-110"
-                      style={{ fill: tech.color }}
-                      dangerouslySetInnerHTML={{ __html: icon?.path }}
-                    />
-                    <span className="text-2xl font-medium text-gray-100">
-                      {tech.title}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+
+          {/* ✅ Instead of repeating the logo scrolling logic, we import a reusable container */}
+          <Logos />
+          
         </motion.div>
 
         {/* CTA Section */}
@@ -195,8 +174,6 @@ const Solutions = () => {
           <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
             Join thousands of engineers who've transformed their logging workflow with Opsentra
           </p>
-          <div className="flex justify-center gap-6">
-          </div>
         </motion.div>
 
         {/* Background Elements */}
@@ -223,17 +200,8 @@ const Solutions = () => {
             />
           ))}
         </div>
-      </div>
 
-      <style jsx>{`
-        @keyframes marquee {
-          0% { transform: translateX(0); }
-          100% { transform: translateX(-50%); }
-        }
-        .animate-marquee {
-          animation: marquee 40s linear infinite;
-        }
-      `}</style>
+      </div>
     </section>
   );
 };

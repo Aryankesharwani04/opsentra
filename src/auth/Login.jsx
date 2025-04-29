@@ -1,17 +1,42 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaGoogle, FaGithub } from "react-icons/fa";
+import { api } from "../utils/api";
+import { AuthContext } from "../contexts/AuthContext";
 
 const Login = () => {
+  const [form, setForm] = useState({ email: "", password: "" });
+  const [error, setError] = useState("");
+  const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    try {
+      const { token } = await api("/api/auth/login", {
+        method: "POST",
+        body: JSON.stringify(form)
+      });
+      localStorage.setItem("token", token);
+      login(token);
+      navigate("/");
+    } catch (err) {
+      setError(err.message);
+    }
+  };
+
   const handleGoogleLogin = () => {
-    // TODO: integrate Google OAuth flow here
-    console.log("Google login clicked");
+    window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google`;
   };
 
   const handleGithubLogin = () => {
-    // TODO: integrate GitHub OAuth flow here
-    console.log("GitHub login clicked");
+    window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/github`;
   };
 
   return (
@@ -22,23 +47,32 @@ const Login = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h2 className="text-3xl font-extrabold text-center text-[#9DE2E2] mb-8">
+        <h2 className="text-3xl font-extrabold text-center text-[#9DE2E2] mb-4">
           Welcome Back
         </h2>
-        <form className="flex flex-col gap-6">
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <input
+            name="email"
             type="email"
             placeholder="Email"
-            className="bg-[#0B0C20] text-white border border-[#3A3D67] rounded-xl py-4 px-5 placeholder:text-[#9DE2E2] focus:outline-none focus:ring-2 focus:ring-[#9DE2E2]"
+            value={form.email}
+            onChange={handleChange}
+            className="bg-[#0B0C20] text-white border border-[#3A3D67] rounded-xl py-3 px-4 placeholder:text-[#9DE2E2] focus:outline-none focus:ring-2 focus:ring-[#9DE2E2]"
+            required
           />
           <input
+            name="password"
             type="password"
             placeholder="Password"
-            className="bg-[#0B0C20] text-white border border-[#3A3D67] rounded-xl py-4 px-5 placeholder:text-[#9DE2E2] focus:outline-none focus:ring-2 focus:ring-[#9DE2E2]"
+            value={form.password}
+            onChange={handleChange}
+            className="bg-[#0B0C20] text-white border border-[#3A3D67] rounded-xl py-3 px-4 placeholder:text-[#9DE2E2] focus:outline-none focus:ring-2 focus:ring-[#9DE2E2]"
+            required
           />
           <button
             type="submit"
-            className="cursor-pointer bg-[#9DE2E2] text-black py-4 rounded-xl font-semibold hover:bg-white transition duration-300"
+            className="cursor-pointer bg-[#9DE2E2] text-black py-3 rounded-xl font-semibold hover:bg-white transition duration-300"
           >
             Log In
           </button>
@@ -47,7 +81,7 @@ const Login = () => {
         <div className="mt-6 flex justify-center space-x-6">
           <button
             onClick={handleGoogleLogin}
-            className="cursor-pointer p-3 rounded-full bg-[#2c2f57] hover:bg-[#3A3D67] transition"
+            className="p-3 rounded-full bg-[#2c2f57] hover:bg-[#3A3D67] transition"
             aria-label="Login with Google"
             title="Login with Google"
           >
@@ -55,7 +89,7 @@ const Login = () => {
           </button>
           <button
             onClick={handleGithubLogin}
-            className="cursor-pointer p-3 rounded-full bg-[#2c2f57] hover:bg-[#3A3D67] transition"
+            className="p-3 rounded-full bg-[#2c2f57] hover:bg-[#3A3D67] transition"
             aria-label="Login with GitHub"
             title="Login with GitHub"
           >

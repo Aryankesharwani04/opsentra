@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import * as SimpleIcons from 'simple-icons';
+import Logos from '../components/Logos';
 
 const useCases = [
   {
@@ -25,20 +25,7 @@ const useCases = [
   },
 ];
 
-const technologies = [
-  { name: "AWS", color: "#FF9900" },
-  { name: "Docker", color: "#2496ED" },
-  { name: "Linux", color: "#FCC624" },
-  { name: "Jenkins", color: "#D24939" },
-  { name: "Kubernetes", color: "#326CE5" },
-  { name: "Node.js", color: "#539E43" },
-  { name: "Nginx", color: "#009639" },
-  { name: "MongoDB", color: "#47A248" },
-];
-
 function Usecase() {
-  const duplicatedTech = [...technologies, ...technologies];
-
   return (
     <section className="mt-8 min-h-screen bg-gradient-to-br from-[#0B0C20] to-[#1D1F3A] text-white px-6 py-20 overflow-hidden">
       <div className="max-w-7xl mx-auto">
@@ -80,55 +67,9 @@ function Usecase() {
           <h2 className="text-4xl font-bold mb-16 text-center text-[#9DE2E2]">
             Supported Technologies
           </h2>
-          
-          <div className="relative overflow-hidden py-6">
-            <div className="animate-marquee whitespace-nowrap">
-              {duplicatedTech.map((tech, idx) => {
-                const icon = SimpleIcons[`si${tech.name.replace(/\./g, 'dot').replace(/\s/g, '')}`];
-                return (
-                  <div
-                    key={idx}
-                    className="inline-flex items-center mx-10 opacity-90 hover:opacity-100 transition-all duration-300 group"
-                    style={{ width: '220px' }}
-                  >
-                    <svg
-                      role="img"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-12 w-12 mr-4 transition-transform duration-300 group-hover:scale-110"
-                      style={{ fill: tech.color }}
-                      dangerouslySetInnerHTML={{ __html: icon?.path }}
-                    />
-                    <span className="text-2xl font-medium text-gray-100 transition-colors duration-300 group-hover:text-white">
-                      {tech.name}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
 
-          <style jsx>{`
-            @keyframes marquee {
-              0% { transform: translateX(0); }
-              100% { transform: translateX(-50%); }
-            }
-            
-            .animate-marquee {
-              animation: marquee 40s linear infinite;
-              display: inline-block;
-            }
-
-            .animate-marquee:hover {
-              animation-play-state: paused;
-            }
-            
-            @media (prefers-reduced-motion: reduce) {
-              .animate-marquee {
-                animation: none;
-              }
-            }
-          `}</style>
+          {/* Replace manual marquee with Logos container */}
+          <Logos />
         </motion.div>
       </div>
     </section>

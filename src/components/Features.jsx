@@ -2,30 +2,31 @@ import { motion } from "framer-motion";
 
 const features = [
   {
-    title: "Built on Open Source",
-    text: "Leverage the power and flexibility of open-source tools—Elastic, OpenTelemetry, Grafana—and avoid vendor lock-in.",
+    title: "Unified Log Aggregation",
+    text: "Collect and centralize logs from Docker, Linux, Jenkins, Terraform, and AWS into a single dashboard for seamless debugging.",
   },
   {
-    title: "Full Visibility into Your Stack",
-    text: "See logs, metrics and traces from AWS, Docker, Linux, Jenkins and Kubernetes in one unified dashboard.",
+    title: "Real-Time Monitoring & Alerts",
+    text: "Get notified instantly about system anomalies, failures, or unusual patterns with intelligent, customizable alerting.",
   },
   {
-    title: "Lower Observability Costs",
-    text: "Optimize your data pipeline with sampling, tiered storage and intelligent retention to reduce your cloud bill.",
+    title: "Seamless Integrations",
+    text: "Easily connect with tools like Slack, Jira, PagerDuty, and Webhooks to integrate Opsentra into your existing DevOps workflows.",
   },
   {
-    title: "AI-Driven Insights",
-    text: "Our AI agent automatically highlights anomalies, groups similar errors, and pinpoints root causes in seconds.",
+    title: "Cost-Effective Observability",
+    text: "Reduce monitoring costs with efficient log storage, smart sampling, and intelligent data retention policies tailored to your needs.",
   },
   {
-    title: "Custom Alerts & Workflows",
-    text: "Set up alerts on any log pattern or metric threshold, and trigger notifications or automated remediation scripts.",
+    title: "Role-Based Access Control",
+    text: "Secure your logs by defining user roles and permissions, ensuring only the right teams have access to sensitive information.",
   },
   {
-    title: "Extensible Integrations",
-    text: "Connect with Slack, PagerDuty, Jira and more to fit Opsentra seamlessly into your existing DevOps toolchain.",
-  },
+    title: "Easy Onboarding",
+    text: "Get started in minutes with simple agent installations and step-by-step guides for setting up Docker, Linux, Jenkins, Terraform, and AWS log forwarding.",
+  }
 ];
+
 
 const Features = () => {
   return (

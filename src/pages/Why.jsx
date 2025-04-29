@@ -1,7 +1,8 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { ShieldCheck, Zap, Eye, Layers, Clock, BarChart, Server, Users, Link } from "lucide-react";
-import * as SimpleIcons from 'simple-icons';
+import { ShieldCheck, Zap, Eye, Layers, Clock, BarChart, Server, Users } from "lucide-react";
+import Logos from '../components/Logos';
+
 const features = [
   {
     icon: <ShieldCheck size={40} className="text-[#9DE2E2]" />,
@@ -51,18 +52,7 @@ const testimonials = [
   },
 ];
 
-const integrations = [
-  { name: "AWS", color: "#FF9900" },
-  { name: "Docker", color: "#2496ED" },
-  { name: "Kubernetes", color: "#326CE5" },
-  { name: "Jenkins", color: "#D24939" },
-  { name: "Terraform", color: "#7B42BC" },
-  { name: "Prometheus", color: "#E6522C" },
-];
-
 const Why = () => {
-  const duplicatedIntegrations = [...integrations, ...integrations];
-
   return (
     <section className="bg-gradient-to-br from-[#0B0C20] to-[#1D1F3A] py-24 px-6 text-white relative overflow-hidden">
       <div className="max-w-7xl mx-auto space-y-32">
@@ -119,7 +109,7 @@ const Why = () => {
           whileInView={{ opacity: 1 }}
           transition={{ duration: 1 }}
         >
-          {statistics.map((stat, index) => (
+          {statistics.map((stat) => (
             <div key={stat.title} className="bg-[#13152D] border-2 border-[#2A2E4A] rounded-2xl p-8">
               <div className="flex items-center gap-4 mb-6">
                 {stat.icon}
@@ -161,44 +151,20 @@ const Why = () => {
           </div>
         </motion.div>
 
-        {/* Integrations Section */}
+        {/* Logos Container Section */}
         <motion.div
-          className="space-y-12"
+          className="mb-24"
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           transition={{ duration: 1 }}
         >
-          <h3 className="text-4xl font-bold text-center text-[#9DE2E2]">
+          <h3 className="text-4xl font-bold text-center text-[#9DE2E2] mb-8">
             Seamless Integrations
           </h3>
-          <div className="relative overflow-hidden py-6">
-            <div className="animate-marquee whitespace-nowrap">
-              {duplicatedIntegrations.map((tech, idx) => {
-                const icon = SimpleIcons[`si${tech.name.replace(/\s/g, '')}`];
-                return (
-                  <div
-                    key={idx}
-                    className="inline-flex items-center mx-10 opacity-90 hover:opacity-100 transition-all duration-300 group"
-                    style={{ width: '220px' }}
-                  >
-                    <svg
-                      role="img"
-                      viewBox="0 0 24 24"
-                      className="h-12 w-12 mr-4 transition-transform duration-300 group-hover:scale-110"
-                      style={{ fill: tech.color }}
-                      dangerouslySetInnerHTML={{ __html: icon?.path }}
-                    />
-                    <span className="text-2xl font-medium text-gray-100">
-                      {tech.name}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
+          <Logos />
         </motion.div>
 
-        {/* CTA Section */}
+        {/* CTA Section "Ready to Transform" */}
         <motion.div
           className="text-center space-y-8 mb-0"
           initial={{ opacity: 0, y: 50 }}
@@ -211,8 +177,7 @@ const Why = () => {
           <p className="text-3xl text-[#9DE2E2] max-w-2xl mx-auto">
             Join hundreds of DevOps teams already streamlining their workflows with Opsentra
           </p>
-          <div className="flex justify-center gap-6">
-          </div>
+          <div className="flex justify-center gap-6" />
         </motion.div>
 
         {/* Animated background elements */}
@@ -249,7 +214,8 @@ const Why = () => {
         .animate-marquee {
           animation: marquee 40s linear infinite;
         }
-      `}</style>
+      `}
+      </style>
     </section>
   );
 };

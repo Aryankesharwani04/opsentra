@@ -1,17 +1,64 @@
-import React from "react";
+import React, { useState, useContext } from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaGoogle, FaGithub } from "react-icons/fa";
+import { api } from "../utils/api";
+import { AuthContext } from "../contexts/AuthContext";
 
 const Register = () => {
+  const navigate = useNavigate();
+  const { login } = useContext(AuthContext);
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirm: ""
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const handleChange = (e) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+    // Client-side password length validation
+    if (form.password.length < 6) {
+      setError("Password must be at least 6 characters long");
+      return;
+    }
+    if (form.password !== form.confirm) {
+      setError("Passwords do not match");
+      return;
+    }
+    setLoading(true);
+    try {
+      const { token } = await api("/api/auth/register", {
+        method: "POST",
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          password: form.password
+        })
+      });
+      localStorage.setItem("token", token);
+      login(token);
+      navigate("/");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleGoogleRegister = () => {
-    // TODO: integrate Google OAuth registration flow
-    console.log("Google register clicked");
+    window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/google`;
   };
 
   const handleGithubRegister = () => {
-    // TODO: integrate GitHub OAuth registration flow
-    console.log("GitHub register clicked");
+    window.location.href = `${import.meta.env.VITE_API_URL}/api/auth/github`;
   };
 
   return (
@@ -22,56 +69,83 @@ const Register = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h2 className="text-3xl font-extrabold text-center text-[#9DE2E2] mb-8">
+        <h2 className="text-3xl font-extrabold text-center text-[#9DE2E2] mb-4">
           Create Your Account
         </h2>
-        <form className="flex flex-col gap-6">
+        <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <input
+            name="name"
+            value={form.name}
+            onChange={handleChange}
             type="text"
             placeholder="Full Name"
-            className="bg-[#0B0C20] text-white border border-[#3A3D67] rounded-xl py-4 px-5 placeholder:text-[#9DE2E2] focus:outline-none focus:ring-2 focus:ring-[#9DE2E2]"
+            className="bg-[#0B0C20] text-white border border-[#3A3D67] rounded-xl py-3 px-4 placeholder:text-[#9DE2E2] focus:outline-none focus:ring-2 focus:ring-[#9DE2E2]"
+            required
           />
           <input
+            name="email"
+            value={form.email}
+            onChange={handleChange}
             type="email"
             placeholder="Email"
-            className="bg-[#0B0C20] text-white border border-[#3A3D67] rounded-xl py-4 px-5 placeholder:text-[#9DE2E2] focus:outline-none focus:ring-2 focus:ring-[#9DE2E2]"
+            className="bg-[#0B0C20] text-white border border-[#3A3D67] rounded-xl py-3 px-4 placeholder:text-[#9DE2E2] focus:outline-none focus:ring-2 focus:ring-[#9DE2E2]"
+            required
           />
           <input
+            name="password"
+            value={form.password}
+            onChange={handleChange}
             type="password"
-            placeholder="Password"
-            className="bg-[#0B0C20] text-white border border-[#3A3D67] rounded-xl py-4 px-5 placeholder:text-[#9DE2E2] focus:outline-none focus:ring-2 focus:ring-[#9DE2E2]"
+            placeholder="Password (min 6 chars)"
+            className="bg-[#0B0C20] text-white border border-[#3A3D67] rounded-xl py-3 px-4 placeholder:text-[#9DE2E2] focus:outline-none focus:ring-2 focus:ring-[#9DE2E2]"
+            required
+            minLength={6}
           />
           <input
+            name="confirm"
+            value={form.confirm}
+            onChange={handleChange}
             type="password"
             placeholder="Confirm Password"
-            className="bg-[#0B0C20] text-white border border-[#3A3D67] rounded-xl py-4 px-5 placeholder:text-[#9DE2E2] focus:outline-none focus:ring-2 focus:ring-[#9DE2E2]"
+            className="bg-[#0B0C20] text-white border border-[#3A3D67] rounded-xl py-3 px-4 placeholder:text-[#9DE2E2] focus:outline-none focus:ring-2 focus:ring-[#9DE2E2]"
+            required
+            minLength={6}
           />
 
           <button
             type="submit"
-            className="bg-[#9DE2E2] text-black py-4 rounded-xl font-semibold hover:bg-white transition duration-300"
+            className={`cursor-pointer py-3 rounded-xl font-semibold transition duration-300 ${
+              loading
+                ? "bg-gray-500 cursor-not-allowed"
+                : "bg-[#9DE2E2] hover:bg-white text-black"
+            }`}
+            disabled={loading}
           >
-            Register
+            {loading ? "Registering..." : "Register"}
           </button>
         </form>
 
+        {error && <p className="text-red-500 text-center mt-2">{error}</p>}
+
         <div className="mt-6 flex justify-center space-x-6">
-          <button
+          <motion.button
             onClick={handleGoogleRegister}
-            className="cursor-pointer p-3 rounded-full bg-[#2c2f57] hover:bg-[#3A3D67] transition"
+            whileHover={{ scale: 1.1 }}
+            className="p-3 rounded-full bg-[#2c2f57] hover:bg-[#3A3D67] transition"
             aria-label="Register with Google"
             title="Register with Google"
           >
             <FaGoogle className="w-6 h-6 text-[#9DE2E2]" />
-          </button>
-          <button
+          </motion.button>
+          <motion.button
             onClick={handleGithubRegister}
-            className="cursor-pointer p-3 rounded-full bg-[#2c2f57] hover:bg-[#3A3D67] transition"
+            whileHover={{ scale: 1.1 }}
+            className="p-3 rounded-full bg-[#2c2f57] hover:bg-[#3A3D67] transition"
             aria-label="Register with GitHub"
             title="Register with GitHub"
           >
             <FaGithub className="w-6 h-6 text-[#9DE2E2]" />
-          </button>
+          </motion.button>
         </div>
 
         <div className="text-sm text-center text-[#9DE2E2] mt-6">
