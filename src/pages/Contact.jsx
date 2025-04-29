@@ -45,12 +45,12 @@ const ContactSupport = () => {
               >
                 Documentation
               </Link>
-              <a 
-                href="/faq" 
+              <Link 
+                to="/faq" 
                 className="inline-flex items-center justify-center w-full bg-[#2A2B45] hover:bg-[#3A3B55] text-white font-semibold py-3 px-6 rounded-lg transition duration-300"
               >
                 FAQ Center
-              </a>
+              </Link>
             </div>
           </div>
 
