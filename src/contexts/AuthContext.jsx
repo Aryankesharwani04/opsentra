@@ -2,6 +2,7 @@
 import React, { createContext, useState, useEffect } from "react";
 import { api } from "../utils/api";
 
+
 export const AuthContext = createContext({
   user: null,
   login: () => {},
