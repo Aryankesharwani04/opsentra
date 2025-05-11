@@ -8,7 +8,6 @@ import Careers from "../pages/Careers";
 import Solutions from "../pages/Solutions";
 import Why from "../pages/Why";
 import Docs from "../pages/Docs";
-import Freetrial from "../auth/Freetrial";
 import Login from "../auth/Login";
 import Register from "../auth/Register";
 import About from "../pages/About";
@@ -21,6 +20,8 @@ import Distributed from "../pages/Distributed";
 import Blogs from "../pages/Blogs";
 import Faq from "../pages/faq";
 import Dashboard from "../components/Dashboard";
+import PrivateRoute from "./PrivateRoute";
+import PublicRoute from "./PublicRoute";
 
 // Protect a route
 const ProtectedRoute = ({ children }) => {
@@ -36,8 +37,6 @@ const HomeRoute = () => {
       {user && 
       <>
       <Dashboard />
-      <Features />
-      <Logos />
       </>
       }
       <Hero />
@@ -46,82 +45,32 @@ const HomeRoute = () => {
     </div>
   );
 };
-
-
-
-
-// const RouteHandler = () => (
-//   <Routes>
-//     <Route
-//       path="/dashboard"
-//       element={
-//         <ProtectedRoute>
-//         <Dashboard />
-//       </ProtectedRoute>
-
-//         // <>
-//         //   <Hero />
-//         //   <Features />
-//         //   <Logos />
-//         // </>
-//       }
-//     />
-//     <Route path="/solutions" element={<Solutions />} />
-//     <Route path="/why" element={<Why />} />
-//     <Route path="/docs" element={<Docs />} />
-//     <Route path="/careers" element={<Careers />} />
-    
-// {/*     <Route path="/usecase" element={<Usecase />} /> */}
-//     <Route path="/free-trial" element={<Freetrial />} />
-//     <Route path="/login" element={<Login />} />
-//     <Route path="/register" element={<Register />} />
-//     <Route path="/about" element={<About />} />
-//     <Route path="/contact" element={<Contact />} />
-//     <Route path="/security" element={<Security />} />
-//     <Route path="/log-management" element={<Logmanagement />} />
-//     <Route path="/infrastructure-monitoring" element={<Infrastructure />} />
-//     <Route path="/distributed-tracing" element={<Distributed />} />
-//     <Route path="/usecase" element={<Usecase />} />
-//     <Route path="/blogs" element={<Blogs/>} />
-//     <Route path="/Faq" element={<Faq/>}/>
-//     <Route path="/dashboard" element={<Dashboard />} />
-
-
-//     {/* 404 Page */}
-//     <Route path="*" element={<h1>404 Not Found</h1>} />
-
-
-//   </Routes>
-// );
 const RouteHandler = () => (
   <Routes>
-    <Route path="/" element={<HomeRoute />} />
+      <Route path="/solutions" element={<Solutions />} />
+      <Route path="/why" element={<Why />} />
+      <Route path="/docs" element={<Docs />} />
+      <Route path="/careers" element={<Careers />} />
+      <Route path="/about" element={<About />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="/security" element={<Security />} />
+      <Route path="/log-management" element={<Logmanagement />} />
+      <Route path="/infrastructure-monitoring" element={<Infrastructure />} />
+      <Route path="/distributed-tracing" element={<Distributed />} />
+      <Route path="/usecase" element={<Usecase />} />
+      <Route path="/blogs" element={<Blogs />} />
+      <Route path="/faq" element={<Faq />} />
+    {/* Public Routes */}
+    <Route element={<PublicRoute />}>
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/" element={<HomeRoute />} />
+    </Route>
 
-    <Route
-      path="/dashboard"
-      element={
-        <ProtectedRoute>
-          <Dashboard />
-        </ProtectedRoute>
-      }
-    />
-
-    <Route path="/solutions" element={<Solutions />} />
-    <Route path="/why" element={<Why />} />
-    <Route path="/docs" element={<Docs />} />
-    <Route path="/careers" element={<Careers />} />
-    <Route path="/free-trial" element={<Freetrial />} />
-    <Route path="/login" element={<Login />} />
-    <Route path="/register" element={<Register />} />
-    <Route path="/about" element={<About />} />
-    <Route path="/contact" element={<Contact />} />
-    <Route path="/security" element={<Security />} />
-    <Route path="/log-management" element={<Logmanagement />} />
-    <Route path="/infrastructure-monitoring" element={<Infrastructure />} />
-    <Route path="/distributed-tracing" element={<Distributed />} />
-    <Route path="/usecase" element={<Usecase />} />
-    <Route path="/blogs" element={<Blogs />} />
-    <Route path="/faq" element={<Faq />} />
+    {/* Protected Routes */}
+    <Route element={<PrivateRoute />}>
+      <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+    </Route>
 
     {/* 404 Page */}
     <Route path="*" element={<h1>404 Not Found</h1>} />

@@ -1,13 +1,14 @@
 import React, { useState, useContext } from "react";
 import { motion } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
-import { FaGoogle, FaGithub } from "react-icons/fa";
+import { FaGoogle, FaGithub, FaSpinner } from "react-icons/fa";
 import { api } from "../utils/api";
 import { AuthContext } from "../contexts/AuthContext";
 
 const Login = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useContext(AuthContext);
 
@@ -18,16 +19,19 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
     try {
       const { token } = await api("/api/auth/login", {
         method: "POST",
-        body: JSON.stringify(form)
+        body: JSON.stringify(form),
       });
       localStorage.setItem("token", token);
       login(token);
       navigate("/");
     } catch (err) {
       setError(err.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -60,6 +64,7 @@ const Login = () => {
             onChange={handleChange}
             className="bg-[#0B0C20] text-white border border-[#3A3D67] rounded-xl py-3 px-4 placeholder:text-[#9DE2E2] focus:outline-none focus:ring-2 focus:ring-[#9DE2E2]"
             required
+            disabled={isLoading}
           />
           <input
             name="password"
@@ -69,12 +74,18 @@ const Login = () => {
             onChange={handleChange}
             className="bg-[#0B0C20] text-white border border-[#3A3D67] rounded-xl py-3 px-4 placeholder:text-[#9DE2E2] focus:outline-none focus:ring-2 focus:ring-[#9DE2E2]"
             required
+            disabled={isLoading}
           />
           <button
             type="submit"
-            className="cursor-pointer bg-[#9DE2E2] text-black py-3 rounded-xl font-semibold hover:bg-white transition duration-300"
+            className="relative flex items-center justify-center cursor-pointer bg-[#9DE2E2] text-black py-3 rounded-xl font-semibold hover:bg-white transition duration-300"
+            disabled={isLoading}
           >
-            Log In
+            {isLoading ? (
+              <FaSpinner className="animate-spin w-5 h-5 text-black" />
+            ) : (
+              "Log In"
+            )}
           </button>
         </form>
 
@@ -84,6 +95,7 @@ const Login = () => {
             className="p-3 rounded-full bg-[#2c2f57] hover:bg-[#3A3D67] transition"
             aria-label="Login with Google"
             title="Login with Google"
+            disabled={isLoading}
           >
             <FaGoogle className="w-6 h-6 text-[#9DE2E2]" />
           </button>
@@ -92,6 +104,7 @@ const Login = () => {
             className="p-3 rounded-full bg-[#2c2f57] hover:bg-[#3A3D67] transition"
             aria-label="Login with GitHub"
             title="Login with GitHub"
+            disabled={isLoading}
           >
             <FaGithub className="w-6 h-6 text-[#9DE2E2]" />
           </button>

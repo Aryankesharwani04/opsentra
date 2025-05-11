@@ -26,7 +26,7 @@ const Hero = () => {
         <p className="text-xl text-gray-300 max-w-3xl mb-8">
           Seamlessly monitor, analyze, and optimize your applications and infrastructure with AI-powered insights and automation.
         </p>
-        <Link to="/free-trial">
+        <Link to="/register">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
