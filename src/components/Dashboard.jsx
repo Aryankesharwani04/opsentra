@@ -84,7 +84,7 @@ const Dashboard = () => {
                             or upload a file. If you're not ready to use your own data, try our sample dataset.
                         </p>
                         <Link
-                            to="/integrations"
+                            to="/integration"
                             className="inline-block px-6 py-3 rounded-lg bg-[#00F0FF] text-[#0B0C20] font-semibold hover:bg-[#00dde9] transition-colors"
                         >
                             Add Integrations!

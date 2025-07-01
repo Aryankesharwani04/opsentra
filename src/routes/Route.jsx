@@ -22,6 +22,7 @@ import Faq from "../pages/faq";
 import Dashboard from "../components/Dashboard";
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
+import Integration from "../components/Integration";
 
 // Protect a route
 const ProtectedRoute = ({ children }) => {
@@ -71,6 +72,12 @@ const RouteHandler = () => (
     <Route element={<PrivateRoute />}>
       <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
     </Route>
+    {/* new integration private route */}
+    <Route element={<PrivateRoute />}>
+      <Route path="/integration" element={<ProtectedRoute><Integration /></ProtectedRoute>} />
+    </Route>
+    
+
 
     {/* 404 Page */}
     <Route path="*" element={<h1>404 Not Found</h1>} />
