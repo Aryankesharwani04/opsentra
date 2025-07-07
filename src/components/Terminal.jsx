@@ -47,7 +47,7 @@ const LinuxTerminal = () => {
 
         try {
             // Use hardcoded URL for now to eliminate variables
-            const wsUrl = "ws://localhost:5001";
+            const wsUrl = "ws://localhost:5000";
             console.log("Connecting to WebSocket:", wsUrl);
             
             socketRef.current = new WebSocket(wsUrl);
