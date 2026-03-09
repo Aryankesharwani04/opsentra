@@ -1,38 +1,16 @@
-# Opsentra Frontend
+# React + Vite
 
-This folder will contain the Opsentra frontend application.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Planned Stack
-- **Framework**: React (with Vite) or Next.js
-- **Styling**: Tailwind CSS / Vanilla CSS
-- **State**: Zustand / Redux Toolkit
-- **API Client**: Axios with interceptors
+Currently, two official plugins are available:
 
-## Getting Started
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-```bash
-# When ready, bootstrap with:
-npx create-vite@latest . --template react
+## React Compiler
 
-# Or Next.js:
-npx create-next-app@latest . --typescript
-```
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-## Environment Variables
+## Expanding the ESLint configuration
 
-Create a `.env` file:
-
-```env
-VITE_API_URL=http://localhost:5000/api/v1
-```
-
-## Backend
-
-The backend API is in the `../opsentra/` folder.
-
-```bash
-cd ../opsentra
-cp .env.example .env
-npm install
-npm run dev
-```
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.

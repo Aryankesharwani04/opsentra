@@ -22,7 +22,7 @@ const {
   publishBatch,
   cacheLatestLogs,
   queueKey,
-} = require('./logStreamService');
+} = require('../services/logStreamService');
 const { getRedisClient } = require('../config/redis');
 const logger = require('../utils/logger');
 
@@ -83,7 +83,7 @@ const processWorkspaceQueue = async (workspaceId) => {
     } else {
       logger.error(`[DbInsertWorker] insertMany error: ${err.message}`);
       // Re-queue the failed batch so it isn't lost
-      const { pushToQueue } = require('./logStreamService');
+      const { pushToQueue } = require('../services/logStreamService');
       await pushToQueue(workspaceId, logs).catch(() => {});
       return;
     }
