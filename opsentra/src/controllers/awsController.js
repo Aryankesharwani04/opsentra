@@ -1,6 +1,7 @@
 'use strict';
 
 const awsAssumeRoleService = require('../services/awsAssumeRoleService');
+const { generateIamRoleTemplate, generateLaunchUrl, OPSENTRA_ACCOUNT_ID } = require('../services/cloudFormationService');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/AppError');
 const { sendSuccess, sendCreated, sendNoContent } = require('../utils/apiResponse');
@@ -129,4 +130,56 @@ const verifyRole = catchAsync(async (req, res) => {
   });
 });
 
-module.exports = { connect, list, disconnect, verifyRole };
+/**
+ * @route  GET /api/v1/aws/template
+ * @access Protected
+ * @query  region       - Target AWS region (default: us-east-1)
+ * @query  role_name    - Custom IAM role name (default: OpsentraCloudWatchAccess)
+ * @query  external_id  - Optional ExternalId condition for extra trust-policy security
+ *
+ * Returns a ready-to-deploy CloudFormation template plus a console quick-launch URL.
+ * Frontend should display a "Launch CloudFormation Stack" button using the launch_url.
+ */
+const getTemplate = catchAsync(async (req, res) => {
+  const {
+    region = 'us-east-1',
+    role_name: roleName = 'OpsentraCloudWatchAccess',
+    external_id: externalId = null,
+  } = req.query;
+
+  const template = generateIamRoleTemplate({ roleName, externalId, region });
+
+  // Build a CloudFormation console quick-launch URL.
+  // In production, you would upload the template to a public S3 bucket and use that URL.
+  // For now we return null and instruct users to deploy via AWS CLI or manual upload.
+  const launchUrl = generateLaunchUrl(null, region);
+
+  sendSuccess(res, {
+    message: 'CloudFormation template generated successfully',
+    data: {
+      template,
+      meta: {
+        roleName,
+        region,
+        externalIdRequired: Boolean(externalId),
+        opsentraTrustAccountId: OPSENTRA_ACCOUNT_ID,
+        launch_url: launchUrl,
+        permissions: template.Resources.OpsentraCloudWatchRole.Properties.Policies[0].PolicyDocument.Statement[0].Action,
+        instructions: [
+          '1. Download the CloudFormation template JSON below.',
+          '2. Open the AWS Console → CloudFormation → Create Stack → Upload a template file.',
+          '3. Upload the template and click through the wizard.',
+          '4. After the stack is created, copy the RoleArn from the Outputs tab.',
+          '5. Paste the RoleArn into Opsentra under AWS Integrations → Connect Account.',
+        ],
+        cliCommand: `aws cloudformation deploy \\
+  --template-file opsentra-role.json \\
+  --stack-name OpsentraIntegration \\
+  --capabilities CAPABILITY_NAMED_IAM \\
+  --region ${region}`,
+      },
+    },
+  });
+});
+
+module.exports = { connect, list, disconnect, verifyRole, getTemplate };

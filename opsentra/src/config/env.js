@@ -44,6 +44,8 @@ const envSchema = Joi.object({
   AWS_S3_SIGNED_URL_EXPIRES: Joi.number().default(3600),
   AWS_SES_FROM_EMAIL: Joi.string().email().optional(),
   AWS_SES_FROM_NAME: Joi.string().default('Opsentra'),
+  // Opsentra's own AWS account ID — embedded in CloudFormation trust policies
+  OPSENTRA_AWS_ACCOUNT_ID: Joi.string().pattern(/^\d{12}$/).optional().default('123456789012'),
 
   // Logging
   LOG_LEVEL: Joi.string().valid('error', 'warn', 'info', 'http', 'debug').default('debug'),
@@ -111,6 +113,7 @@ const config = {
     region: envVars.AWS_REGION,
     accessKeyId: envVars.AWS_ACCESS_KEY_ID,
     secretAccessKey: envVars.AWS_SECRET_ACCESS_KEY,
+    opsentraAccountId: envVars.OPSENTRA_AWS_ACCOUNT_ID,
     s3: {
       bucketName: envVars.AWS_S3_BUCKET_NAME,
       signedUrlExpires: envVars.AWS_S3_SIGNED_URL_EXPIRES,
