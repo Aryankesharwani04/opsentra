@@ -45,8 +45,13 @@ const createRateLimiter = ({ windowMs, max, keyPrefix = 'rl:global' } = {}) => {
       res.status(429).json(error.toJSON());
     },
     skip: (req) => {
-      // Skip rate limiting for health checks
-      return req.path === '/api/v1/health';
+      // Skip rate limiting for health checks and frontend polling routes
+      const skippedPaths = [
+        '/api/v1/health',
+        '/api/v1/servers',
+        '/api/v1/agent/install-command',
+      ];
+      return skippedPaths.includes(req.path);
     },
   });
 };
