@@ -14,7 +14,7 @@ const register = catchAsync(async (req, res) => {
     userAgent: req.get('user-agent'),
   };
 
-  const { user, accessToken, refreshToken } = await authService.register(req.body, meta);
+  const { user, workspace, accessToken, refreshToken } = await authService.register(req.body, meta);
 
   // Set refresh token as HttpOnly cookie
   res.cookie('refreshToken', refreshToken, {
@@ -24,7 +24,8 @@ const register = catchAsync(async (req, res) => {
     maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
   });
 
-  sendCreated(res, { user, accessToken }, 'Account created successfully');
+  // workspace.apiKey is returned ONLY here at registration — save it immediately
+  sendCreated(res, { user, workspace, accessToken }, 'Account created successfully');
 });
 
 /**

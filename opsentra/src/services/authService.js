@@ -1,17 +1,22 @@
 'use strict';
 
+const mongoose = require('mongoose');
 const User = require('../models/User');
 const RefreshToken = require('../models/RefreshToken');
 const AuditLog = require('../models/AuditLog');
+const Workspace = require('../models/Workspace');
 const tokenService = require('./tokenService');
 const AppError = require('../utils/AppError');
 const logger = require('../utils/logger');
 
 /**
  * Register a new user.
+ * Atomically creates a User + default Workspace in a MongoDB session.
+ * Returns the workspace with its API key (only time the raw key is exposed).
+ *
  * @param {object} data - { firstName, lastName, email, password, role?, tenantId? }
  * @param {object} [meta] - { ipAddress, userAgent }
- * @returns {Promise<{ user: object, accessToken: string, refreshToken: string }>}
+ * @returns {Promise<{ user: object, workspace: object, accessToken: string, refreshToken: string }>}
  */
 const register = async (data, meta = {}) => {
   const { firstName, lastName, email, password, role, tenantId } = data;
@@ -20,14 +25,39 @@ const register = async (data, meta = {}) => {
   const existingUser = await User.findOne({ email });
   if (existingUser) throw AppError.conflict('An account with this email already exists');
 
-  // Create user (password hashed in pre-save hook)
-  const user = await User.create({ firstName, lastName, email, password, role, tenantId });
+  // Use a MongoDB session for atomicity: if workspace creation fails, user is rolled back
+  const session = await mongoose.startSession();
+  let user;
+  let workspace;
+
+  try {
+    await session.withTransaction(async () => {
+      // 1. Create the user (password hashed by pre-save hook)
+      [user] = await User.create([{ firstName, lastName, email, password, role, tenantId }], { session });
+
+      // 2. Auto-create a default workspace for the new user
+      //    The Workspace pre-save hook generates the apiKey automatically
+      [workspace] = await Workspace.create(
+        [{
+          userId: user._id,
+          workspaceName: `${firstName}'s Workspace`,
+          description: 'Default workspace created on registration',
+        }],
+        { session },
+      );
+    });
+  } finally {
+    await session.endSession();
+  }
+
+  // Fetch workspace with apiKey included (select: false by default)
+  const workspaceWithKey = await Workspace.findById(workspace._id).select('+apiKey').lean();
 
   // Issue token pair
   const { accessToken, refreshToken } = await tokenService.createTokenPair(user, meta);
 
-  // Audit log
-  await AuditLog.create({
+  // Audit log (fire-and-forget — don't block the response)
+  AuditLog.create({
     userId: user._id,
     tenantId: user.tenantId,
     action: 'AUTH_REGISTER',
@@ -36,11 +66,17 @@ const register = async (data, meta = {}) => {
     status: 'SUCCESS',
     ipAddress: meta.ipAddress,
     userAgent: meta.userAgent,
-  });
+    metadata: { workspaceId: workspace._id },
+  }).catch((err) => logger.error('[AuthService] Audit log failed:', err.message));
 
-  logger.info(`[AuthService] New user registered: ${email}`);
+  logger.info(`[AuthService] New user registered: ${email} | workspaceId: ${workspace._id}`);
 
-  return { user: user.toPublic(), accessToken, refreshToken };
+  return {
+    user: user.toPublic(),
+    workspace: workspaceWithKey,
+    accessToken,
+    refreshToken,
+  };
 };
 
 /**
