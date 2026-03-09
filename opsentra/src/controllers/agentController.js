@@ -42,8 +42,8 @@ const getInstallCommand = catchAsync(async (req, res) => {
 
   // Primary install command (one-liner for the EC2 terminal)
   const installCommand = [
-    `curl -sSL ${AGENT_BASE_URL}/install.sh`,
-    `| bash -s ${workspaceId}`,
+    `sudo curl -sSL ${AGENT_BASE_URL}/install.sh`,
+    `| sudo bash -s ${workspaceId}`,
     instanceNameHint,
   ].filter(Boolean).join(' ');
 
