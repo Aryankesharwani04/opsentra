@@ -20,7 +20,7 @@ export default function ConnectAws() {
 
   const fetchIntegrations = async () => {
     try {
-      const res = await api.get('/aws');
+      const res = await api.get('/aws/integrations');
       setIntegrations(res.data.data);
     } catch (err) {
       setError('Failed to load AWS integrations.');
@@ -49,7 +49,7 @@ export default function ConnectAws() {
     setError('');
     
     try {
-      await api.post('/aws/connect', { roleArn, region, alias: alias || undefined });
+      await api.post('/aws/connect', { role_arn: roleArn, region, alias: alias || undefined });
       setRoleArn('');
       setAlias('');
       await fetchIntegrations(); // Refresh list

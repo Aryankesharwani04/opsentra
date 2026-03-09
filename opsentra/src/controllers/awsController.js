@@ -78,6 +78,9 @@ const list = catchAsync(async (req, res) => {
   }
 
   const integrations = await awsAssumeRoleService.listIntegrations(workspace_id);
+  console.log(`[awsController] Active User ID: `, req.user._id);
+  console.log(`[awsController] Target Workspace ID: `, workspace_id);
+  console.log(`[awsController] Integrations Found: `, integrations.length);
 
   sendSuccess(res, {
     data: integrations,

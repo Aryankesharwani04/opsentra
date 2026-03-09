@@ -39,7 +39,7 @@ export default function SetupWizard() {
     try {
       setLoading(true);
       const [intRes, cfRes] = await Promise.all([
-        api.get('/aws'),
+        api.get('/aws/integrations'),
         api.get('/aws/template')
       ]);
       setIntegrations(intRes.data.data);
@@ -79,7 +79,7 @@ export default function SetupWizard() {
     setIsConnectingAws(true);
     setAwsError('');
     try {
-      await api.post('/aws/connect', { roleArn, region, alias: alias || undefined });
+      await api.post('/aws/connect', { role_arn: roleArn, region, alias: alias || undefined });
       setCurrentStep(2);
     } catch (err) {
       setAwsError(err.response?.data?.error?.message || 'Failed to connect AWS account.');
@@ -236,10 +236,10 @@ export default function SetupWizard() {
                 
                 <div className="relative mb-8">
                   <pre className="w-full bg-background border border-border rounded-lg p-5 overflow-x-auto text-sm text-primary font-mono whitespace-pre-wrap">
-                    {installCommand?.command || 'Loading command...'}
+                    {installCommand?.install_command || 'Loading command...'}
                   </pre>
                   <button
-                    onClick={() => copyToClipboard(installCommand?.command)}
+                    onClick={() => copyToClipboard(installCommand?.install_command)}
                     className="absolute top-4 right-4 p-2 bg-surface hover:bg-surface-hover border border-border rounded-md text-muted hover:text-white transition-colors"
                   >
                     {copied ? <Check className="w-4 h-4 text-success" /> : <Copy className="w-4 h-4" />}
