@@ -1,0 +1,13 @@
+{
+  "name": "opsentra-frontend",
+  "version": "1.0.0",
+  "description": "Opsentra SaaS Platform — Frontend (placeholder)",
+  "private": true,
+  "scripts": {
+    "dev": "echo 'Run: npx create-vite@latest . --template react'",
+    "start": "echo 'Frontend not yet bootstrapped'"
+  },
+  "keywords": ["opsentra", "frontend", "react"],
+  "author": "Opsentra Team",
+  "license": "MIT"
+}
