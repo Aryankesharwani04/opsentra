@@ -30,6 +30,7 @@ const generateAccessToken = (payload) =>
     expiresIn: config.jwt.accessExpiresIn,
     issuer: 'opsentra-api',
     audience: 'opsentra-client',
+    jwtid: crypto.randomUUID(), // Guarantees uniqueness even within the same second
   });
 
 /**
@@ -42,6 +43,7 @@ const generateRefreshToken = (payload) =>
     expiresIn: config.jwt.refreshExpiresIn,
     issuer: 'opsentra-api',
     audience: 'opsentra-client',
+    jwtid: crypto.randomUUID(), // Each refresh token is cryptographically unique
   });
 
 /**

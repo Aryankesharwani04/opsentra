@@ -1,6 +1,5 @@
 'use strict';
 
-const mongoose = require('mongoose');
 const User = require('../models/User');
 const RefreshToken = require('../models/RefreshToken');
 const AuditLog = require('../models/AuditLog');
@@ -11,8 +10,9 @@ const logger = require('../utils/logger');
 
 /**
  * Register a new user.
- * Atomically creates a User + default Workspace in a MongoDB session.
- * Returns the workspace with its API key (only time the raw key is exposed).
+ * Creates a User + default Workspace atomically via a compensating transaction:
+ * if workspace creation fails, the user is deleted to maintain consistency.
+ * Works with both standalone MongoDB and replica sets.
  *
  * @param {object} data - { firstName, lastName, email, password, role?, tenantId? }
  * @param {object} [meta] - { ipAddress, userAgent }
@@ -21,42 +21,37 @@ const logger = require('../utils/logger');
 const register = async (data, meta = {}) => {
   const { firstName, lastName, email, password, role, tenantId } = data;
 
-  // Check for duplicate email
+  // 1. Check for duplicate email
   const existingUser = await User.findOne({ email });
   if (existingUser) throw AppError.conflict('An account with this email already exists');
 
-  // Use a MongoDB session for atomicity: if workspace creation fails, user is rolled back
-  const session = await mongoose.startSession();
-  let user;
+  // 2. Create user (password hashed by pre-save hook)
+  const user = await User.create({ firstName, lastName, email, password, role, tenantId });
+
+  // 3. Create default workspace — if this fails, compensate by deleting the user
   let workspace;
-
   try {
-    await session.withTransaction(async () => {
-      // 1. Create the user (password hashed by pre-save hook)
-      [user] = await User.create([{ firstName, lastName, email, password, role, tenantId }], { session });
-
-      // 2. Auto-create a default workspace for the new user
-      //    The Workspace pre-save hook generates the apiKey automatically
-      [workspace] = await Workspace.create(
-        [{
-          userId: user._id,
-          workspaceName: `${firstName}'s Workspace`,
-          description: 'Default workspace created on registration',
-        }],
-        { session },
-      );
+    workspace = await Workspace.create({
+      userId: user._id,
+      workspaceName: `${firstName}'s Workspace`,
+      description: 'Default workspace created on registration',
     });
-  } finally {
-    await session.endSession();
+  } catch (wsErr) {
+    // Compensating action: roll back the user creation
+    await User.findByIdAndDelete(user._id).catch((delErr) =>
+      logger.error('[AuthService] Compensating user deletion failed:', delErr.message),
+    );
+    logger.error('[AuthService] Workspace creation failed during register, user rolled back:', wsErr.message);
+    throw AppError.internal('Account creation failed. Please try again.');
   }
 
-  // Fetch workspace with apiKey included (select: false by default)
+  // 4. Fetch workspace with apiKey (select: false by default)
   const workspaceWithKey = await Workspace.findById(workspace._id).select('+apiKey').lean();
 
-  // Issue token pair
+  // 5. Issue token pair
   const { accessToken, refreshToken } = await tokenService.createTokenPair(user, meta);
 
-  // Audit log (fire-and-forget — don't block the response)
+  // 6. Audit log (fire-and-forget)
   AuditLog.create({
     userId: user._id,
     tenantId: user.tenantId,

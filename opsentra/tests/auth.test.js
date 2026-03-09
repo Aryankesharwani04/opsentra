@@ -2,15 +2,13 @@
 
 const request = require('supertest');
 const mongoose = require('mongoose');
-const { MongoMemoryReplSet } = require('mongodb-memory-server');
+const { MongoMemoryServer } = require('mongodb-memory-server');
 const { createApp } = require('../src/app');
 
 let app;
-let mongoReplSet;
+let mongoServer;
 
-// Mock Redis — getRedisClient throws so rateLimiter falls back to in-memory store.
-// auth.js blacklist check silently catches the throw (fail-open). isConnected
-// still returns true so the health endpoint shows Redis as connected.
+// Mock Redis — getRedisClient throws so rateLimiter falls back to in-memory.
 jest.mock('../src/config/redis', () => ({
   connectRedis: jest.fn(),
   getRedisClient: jest.fn(() => { throw new Error('Redis unavailable in test env'); }),
@@ -18,22 +16,32 @@ jest.mock('../src/config/redis', () => ({
   isConnected: jest.fn().mockReturnValue(true),
 }));
 
-beforeAll(async () => {
-  // MongoMemoryReplSet is required to support transactions (MongoDB sessions)
-  mongoReplSet = await MongoMemoryReplSet.create({ replSet: { count: 1 } });
-  const uri = mongoReplSet.getUri();
+// Mock AWS config — prevents STSClient/S3Client/SESClient from creating real
+// HTTP connections that keep the Jest event loop alive after tests finish.
+jest.mock('../src/config/aws', () => ({
+  s3Client:  { send: jest.fn(), destroy: jest.fn() },
+  sesClient: { send: jest.fn(), destroy: jest.fn() },
+  stsClient: { send: jest.fn(), destroy: jest.fn() },
+  createStsClient: jest.fn(() => ({ send: jest.fn(), destroy: jest.fn() })),
+  S3Commands:  { PutObjectCommand: jest.fn(), DeleteObjectCommand: jest.fn(), GetObjectCommand: jest.fn() },
+  SESCommands: { SendEmailCommand: jest.fn() },
+  STSCommands: { AssumeRoleCommand: jest.fn(), GetCallerIdentityCommand: jest.fn() },
+  getSignedUrl: jest.fn().mockResolvedValue('https://mock-s3.example.com/file'),
+  config: { region: 'us-east-1', bucketName: 'test-bucket' },
+}));
 
+beforeAll(async () => {
+  mongoServer = await MongoMemoryServer.create();
+  const uri = mongoServer.getUri();
   process.env.MONGODB_URI = uri;
   process.env.JWT_ACCESS_SECRET = 'test_access_secret_key_min_32_characters_long';
   process.env.JWT_REFRESH_SECRET = 'test_refresh_secret_key_min_32_characters_long';
   process.env.NODE_ENV = 'test';
-
   await mongoose.connect(uri);
   app = createApp();
-}, 30000); // Replica set init can take up to 30s
+});
 
 afterEach(async () => {
-  // Clean up collections between tests
   const collections = mongoose.connection.collections;
   for (const key in collections) {
     await collections[key].deleteMany({});
@@ -42,7 +50,7 @@ afterEach(async () => {
 
 afterAll(async () => {
   await mongoose.disconnect();
-  await mongoReplSet.stop();
+  await mongoServer.stop();
 });
 
 // ── POST /api/v1/auth/register ────────────────────────────────────
@@ -55,32 +63,22 @@ describe('POST /api/v1/auth/register', () => {
     confirmPassword: 'Test@1234!',
   };
 
-  it('should register a new user, create a workspace, and return tokens', async () => {
-    const res = await request(app)
-      .post('/api/v1/auth/register')
-      .send(validUser);
+  it('should register a new user, auto-create workspace, and return tokens', async () => {
+    const res = await request(app).post('/api/v1/auth/register').send(validUser);
 
     expect(res.status).toBe(201);
     expect(res.body.status).toBe('success');
-
-    // Token
     expect(res.body.data.accessToken).toBeDefined();
-
-    // User shape
     expect(res.body.data.user.email).toBe(validUser.email);
-    expect(res.body.data.user.password).toBeUndefined(); // Never exposed
-
-    // Auto-created workspace
+    expect(res.body.data.user.password).toBeUndefined();      // Never exposed
     expect(res.body.data.workspace).toBeDefined();
     expect(res.body.data.workspace.workspaceName).toBe("John's Workspace");
-    expect(res.body.data.workspace.apiKey).toBeDefined();    // Key returned only on register
-    expect(res.body.data.workspace.apiKey).toMatch(/^ops_/); // Correct key prefix
+    expect(res.body.data.workspace.apiKey).toMatch(/^ops_/);  // Correct key prefix
   });
 
   it('should reject duplicate email', async () => {
     await request(app).post('/api/v1/auth/register').send(validUser);
     const res = await request(app).post('/api/v1/auth/register').send(validUser);
-
     expect(res.status).toBe(409);
     expect(res.body.code).toBe('CONFLICT');
   });
@@ -89,7 +87,6 @@ describe('POST /api/v1/auth/register', () => {
     const res = await request(app)
       .post('/api/v1/auth/register')
       .send({ ...validUser, email: 'other@test.com', password: 'weak', confirmPassword: 'weak' });
-
     expect(res.status).toBe(422);
     expect(res.body.code).toBe('VALIDATION_ERROR');
   });
@@ -102,11 +99,9 @@ describe('POST /api/v1/auth/login', () => {
       firstName: 'Jane', lastName: 'Smith', email: 'jane@test.com',
       password: 'Test@1234!', confirmPassword: 'Test@1234!',
     });
-
     const res = await request(app)
       .post('/api/v1/auth/login')
       .send({ email: 'jane@test.com', password: 'Test@1234!' });
-
     expect(res.status).toBe(200);
     expect(res.body.data.accessToken).toBeDefined();
   });
@@ -116,11 +111,9 @@ describe('POST /api/v1/auth/login', () => {
       firstName: 'Bob', lastName: 'Jones', email: 'bob@test.com',
       password: 'Test@1234!', confirmPassword: 'Test@1234!',
     });
-
     const res = await request(app)
       .post('/api/v1/auth/login')
       .send({ email: 'bob@test.com', password: 'WrongPass!' });
-
     expect(res.status).toBe(401);
   });
 });
@@ -132,13 +125,10 @@ describe('GET /api/v1/auth/me', () => {
       firstName: 'Alice', lastName: 'Wonder', email: 'alice@test.com',
       password: 'Test@1234!', confirmPassword: 'Test@1234!',
     });
-
     const { accessToken } = regRes.body.data;
-
     const res = await request(app)
       .get('/api/v1/auth/me')
       .set('Authorization', `Bearer ${accessToken}`);
-
     expect(res.status).toBe(200);
     expect(res.body.data.email).toBe('alice@test.com');
   });
@@ -151,18 +141,15 @@ describe('GET /api/v1/auth/me', () => {
 
 // ── POST /api/v1/auth/logout ──────────────────────────────────────
 describe('POST /api/v1/auth/logout', () => {
-  it('should logout and clear the refresh token cookie', async () => {
-    // Register + grab access token
+  it('should logout successfully', async () => {
     const regRes = await request(app).post('/api/v1/auth/register').send({
       firstName: 'Sam', lastName: 'Test', email: 'sam@test.com',
       password: 'Test@1234!', confirmPassword: 'Test@1234!',
     });
     const { accessToken } = regRes.body.data;
-
     const res = await request(app)
       .post('/api/v1/auth/logout')
       .set('Authorization', `Bearer ${accessToken}`);
-
     expect(res.status).toBe(200);
     expect(res.body.message).toBe('Logged out successfully');
   });

@@ -83,6 +83,39 @@ const paginationSchema = Joi.object({
   order: Joi.string().valid('asc', 'desc').default('desc'),
 });
 
+// ── AWS Schemas ───────────────────────────────────────────────────
+
+const AWS_REGIONS = [
+  'us-east-1', 'us-east-2', 'us-west-1', 'us-west-2',
+  'eu-west-1', 'eu-west-2', 'eu-west-3', 'eu-central-1', 'eu-north-1',
+  'ap-southeast-1', 'ap-southeast-2', 'ap-northeast-1', 'ap-northeast-2',
+  'ap-south-1', 'ca-central-1', 'sa-east-1', 'me-south-1', 'af-south-1',
+];
+
+const connectAwsSchema = Joi.object({
+  role_arn: Joi.string()
+    .pattern(/^arn:aws:iam::\d{12}:role\/.+$/)
+    .required()
+    .messages({
+      'string.pattern.base': 'Invalid IAM Role ARN. Format: arn:aws:iam::<account-id>:role/<role-name>',
+    }),
+  region: Joi.string().valid(...AWS_REGIONS).required().messages({
+    'any.only': 'Invalid AWS region. Must be a valid AWS region identifier.',
+  }),
+  alias: Joi.string().trim().max(100).optional(),
+  workspace_id: Joi.string().hex().length(24).optional(), // MongoDB ObjectId
+});
+
+const verifyRoleSchema = Joi.object({
+  role_arn: Joi.string()
+    .pattern(/^arn:aws:iam::\d{12}:role\/.+$/)
+    .required()
+    .messages({
+      'string.pattern.base': 'Invalid IAM Role ARN. Format: arn:aws:iam::<account-id>:role/<role-name>',
+    }),
+  region: Joi.string().valid(...AWS_REGIONS).required(),
+});
+
 module.exports = {
   registerSchema,
   loginSchema,
@@ -92,4 +125,6 @@ module.exports = {
   updateUserSchema,
   changePasswordSchema,
   paginationSchema,
+  connectAwsSchema,
+  verifyRoleSchema,
 };
