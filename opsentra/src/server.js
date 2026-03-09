@@ -25,6 +25,13 @@ const logger = require('./utils/logger');
 require('./workers/emailWorker');
 require('./workers/auditWorker');
 
+// Background workers started after DB is ready
+const logCollectorWorker = require('./workers/logCollectorWorker');
+const dbInsertWorker = require('./workers/dbInsertWorker');
+
+// Real-time WebSocket streaming service
+const websocketService = require('./services/websocketService');
+
 let server;
 
 /**
@@ -46,6 +53,12 @@ const gracefulShutdown = (signal) => {
         const { disconnectRedis } = require('./config/redis');
         await disconnectRedis();
         logger.info('[Server] Redis disconnected.');
+
+        // Stop background workers
+        logCollectorWorker.stop();
+        dbInsertWorker.stop();
+        websocketService.detach();
+        logger.info('[Server] Background workers stopped.');
 
         logger.info('[Server] ✅ Graceful shutdown complete.');
         process.exit(0);
@@ -91,6 +104,14 @@ const start = async () => {
       logger.info(`[Server] ✅ HTTP server running on port ${PORT}`);
       logger.info(`[Server] 📡 API: http://localhost:${PORT}/api/${config.server.apiVersion}`);
       logger.info(`[Server] 🏥 Health: http://localhost:${PORT}/api/${config.server.apiVersion}/health`);
+
+      // 5. Start background workers (after DB+server are ready)
+      if (config.env !== 'test') {
+        logCollectorWorker.start();
+        dbInsertWorker.start();
+        websocketService.attach(server);
+        logger.info(`[Server] 📡 WebSocket live at ws://localhost:${PORT}/ws`);
+      }
     });
 
     // Handle server errors (e.g. port already in use)

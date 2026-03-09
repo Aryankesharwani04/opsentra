@@ -38,3 +38,21 @@ jest.mock('@aws-sdk/client-ses', () => ({
 jest.mock('@aws-sdk/s3-request-presigner', () => ({
   getSignedUrl: jest.fn().mockResolvedValue('https://mocked-presigned-url.s3.amazonaws.com/test'),
 }));
+
+jest.mock('@aws-sdk/client-cloudwatch-logs', () => ({
+  CloudWatchLogsClient: jest.fn().mockImplementation(() => ({
+    send: jest.fn().mockResolvedValue({ logGroups: [], events: [], nextToken: undefined }),
+    destroy: jest.fn(),
+  })),
+  DescribeLogGroupsCommand: jest.fn(),
+  FilterLogEventsCommand: jest.fn(),
+}));
+
+jest.mock('ws', () => ({
+  WebSocketServer: jest.fn().mockImplementation(() => ({
+    on: jest.fn(),
+    close: jest.fn(),
+    clients: new Set(),
+  })),
+  OPEN: 1,
+}));

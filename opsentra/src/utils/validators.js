@@ -116,6 +116,27 @@ const verifyRoleSchema = Joi.object({
   region: Joi.string().valid(...AWS_REGIONS).required(),
 });
 
+// ── Server Instance Schemas ───────────────────────────────────────
+
+const registerServerSchema = Joi.object({
+  instance_id: Joi.string()
+    .pattern(/^i-[0-9a-f]{8,17}$/)
+    .required()
+    .messages({
+      'string.pattern.base': 'Invalid EC2 instance ID. Format: i-xxxxxxxxxx (8–17 hex chars)',
+    }),
+  instance_name: Joi.string().trim().min(1).max(255).required(),
+  region: Joi.string().default('us-east-1'),
+  aws_integration_id: Joi.string().hex().length(24).optional(), // MongoDB ObjectId
+  workspace_id: Joi.string().hex().length(24).optional(),       // MongoDB ObjectId
+});
+
+const updateInstanceStatusSchema = Joi.object({
+  status: Joi.string()
+    .valid('running', 'stopped', 'terminated', 'unknown')
+    .required(),
+});
+
 module.exports = {
   registerSchema,
   loginSchema,
@@ -127,4 +148,7 @@ module.exports = {
   paginationSchema,
   connectAwsSchema,
   verifyRoleSchema,
+  registerServerSchema,
+  updateInstanceStatusSchema,
 };
+
