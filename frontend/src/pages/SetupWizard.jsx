@@ -255,8 +255,11 @@ export default function SetupWizard() {
                   <p className="text-muted text-sm mt-1">Leave this page open. We'll automatically redirect you to the dashboard once your server pings us.</p>
                 </div>
                 
-                <div className="flex justify-start mt-6">
+                <div className="flex justify-between items-center mt-6">
                   <button onClick={() => setCurrentStep(2)} className="px-5 py-2.5 rounded-lg text-sm font-medium border border-border text-muted hover:text-white transition-colors">Back</button>
+                  <button onClick={() => navigate('/logs')} className="px-5 py-2.5 bg-surface hover:bg-surface-hover text-white border border-border rounded-lg transition-colors text-sm font-medium flex items-center">
+                    Skip and View Logs <ChevronRight className="w-4 h-4 ml-1" />
+                  </button>
                 </div>
               </div>
             )}

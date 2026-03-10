@@ -72,16 +72,23 @@ const processWorkspaceQueue = async (workspaceId) => {
   let insertedDocs = [];
   try {
     const result = await LogEntry.insertMany(logs, { ordered: false, rawResult: true });
-    // Build inserted docs from the operation result
-    insertedDocs = logs.slice(0, result.insertedCount ?? logs.length);
+    const inserted = result.insertedCount ?? logs.length;
+    logger.debug(`[DbInsertWorker] insertMany result: insertedCount=${inserted}`);
+    insertedDocs = logs.slice(0, inserted);
   } catch (err) {
     if (err.code === 11000 || err?.writeErrors?.every((e) => e.code === 11000)) {
       // All duplicates — still publish whatever we have
       const inserted = logs.length - (err.writeErrors?.length ?? 0);
       logger.debug(`[DbInsertWorker] ${inserted} inserted, ${err.writeErrors?.length ?? 0} duplicates skipped`);
-      insertedDocs = logs;
+      insertedDocs = logs.slice(0, inserted);
     } else {
-      logger.error(`[DbInsertWorker] insertMany error: ${err.message}`);
+      // Surface ALL errors, not just 11000
+      logger.error(`[DbInsertWorker] insertMany error (code=${err.code}): ${err.message}`);
+      if (err.writeErrors?.length) {
+        err.writeErrors.slice(0, 3).forEach((we) =>
+          logger.error(`[DbInsertWorker]   writeError[${we.index}] code=${we.code}: ${we.errmsg}`)
+        );
+      }
       // Re-queue the failed batch so it isn't lost
       const { pushToQueue } = require('../services/logStreamService');
       await pushToQueue(workspaceId, logs).catch(() => {});

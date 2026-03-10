@@ -203,18 +203,25 @@ const processIntegration = async (integration) => {
       const maxTimestamp = Math.max(...events.map((e) => e.timestamp));
 
       // Build structured log documents for the Redis queue
-      const logDocs = events.map((event) => ({
-        workspaceId: workspaceId.toString(),
-        awsIntegrationId: integrationId.toString(),
-        logGroup: logGroupName,
-        logStream: event.logStreamName,
-        message: event.message,
-        timestamp: new Date(event.timestamp),
-        rawTimestamp: event.timestamp,
-        level: inferLogLevel(event.message),
-        source: 'cloudwatch',
-        metadata: { eventId: event.eventId },
-      }));
+      const logDocs = events.map((event) => {
+        // Extract instanceId from logStreamName (e.g., "i-0abc1234-syslog" -> "i-0abc1234")
+        const instanceMatch = event.logStreamName ? event.logStreamName.match(/^(i-[0-9a-f]+)/i) : null;
+        const instanceId = instanceMatch ? instanceMatch[1] : 'unknown';
+
+        return {
+          workspaceId: workspaceId.toString(),
+          awsIntegrationId: integrationId.toString(),
+          instanceId,
+          logGroup: logGroupName,
+          logStream: event.logStreamName,
+          message: event.message,
+          timestamp: new Date(event.timestamp),
+          rawTimestamp: event.timestamp,
+          level: inferLogLevel(event.message),
+          source: 'cloudwatch',
+          metadata: { eventId: event.eventId },
+        };
+      });
 
       // Push to Redis queue — dbInsertWorker will persist + publish
       await pushToQueue(workspaceId.toString(), logDocs);
@@ -252,10 +259,10 @@ const processIntegration = async (integration) => {
  */
 const inferLogLevel = (message = '') => {
   const lower = message.toLowerCase();
-  if (/\b(error|err|fatal|exception|traceback|panic)\b/.test(lower)) return 'error';
-  if (/\b(warn|warning|deprecated)\b/.test(lower))                    return 'warn';
-  if (/\b(debug|trace|verbose)\b/.test(lower))                        return 'debug';
-  return 'info';
+  if (/\b(error|err|fatal|exception|traceback|panic)\b/.test(lower)) return 'ERROR';
+  if (/\b(warn|warning|deprecated)\b/.test(lower))                    return 'WARN';
+  if (/\b(debug|trace|verbose)\b/.test(lower))                        return 'DEBUG';
+  return 'INFO';
 };
 
 // ── Main worker tick ─────────────────────────────────────────────

@@ -22,6 +22,9 @@ const logger = require('./utils/logger');
 const createApp = () => {
   const app = express();
 
+  // Disable ETag so polling endpoints never return stale 304 responses
+  app.set('etag', false);
+
   // ── 1. Security Headers ───────────────────────────────────────
   app.use(
     helmet({

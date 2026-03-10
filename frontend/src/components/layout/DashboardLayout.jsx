@@ -1,15 +1,17 @@
 import { useState, useEffect } from 'react';
-import { Outlet, Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { 
-  LayoutDashboard, 
-  Server, 
-  Cloud, 
-  TerminalSquare, 
+import {
+  LayoutDashboard,
+  Server,
+  Cloud,
+  TerminalSquare,
   LogOut,
   User,
   Wand2,
-  Lock
+  Lock,
+  ChevronDown,
+  ChevronRight,
 } from 'lucide-react';
 import clsx from 'clsx';
 import api from '../../lib/api';
@@ -25,26 +27,30 @@ const baseNavItems = [
 export default function DashboardLayout({ children }) {
   const { user, logout } = useAuth();
   const location = useLocation();
-  
+  const navigate = useNavigate();
+
   // Guard State
   const [hasServers, setHasServers] = useState(false);
   const [loadingGuard, setLoadingGuard] = useState(true);
+  const [servers, setServers] = useState([]);
+  const [serversExpanded, setServersExpanded] = useState(true);
 
   useEffect(() => {
-    // Check if the user has completed at least one server registration
     const checkWizardState = async () => {
       try {
         const res = await api.get('/servers');
-        setHasServers(res.data.data.length > 0);
+        const list = res.data.data || [];
+        setHasServers(list.length > 0);
+        setServers(list);
       } catch (err) {
         console.error('Failed to check wizard state', err);
       } finally {
         setLoadingGuard(false);
       }
     };
-    
+
     checkWizardState();
-  }, [location.pathname]); // Re-check on nav, e.g. when finishing wizard
+  }, [location.pathname]);
 
   // Apply guards to nav items
   const navItems = baseNavItems.map(item => {
@@ -66,20 +72,20 @@ export default function DashboardLayout({ children }) {
           <TerminalSquare className="w-6 h-6 text-primary mr-3" />
           <span className="text-xl font-bold tracking-tight text-white">Opsentra</span>
         </div>
-        
+
         <nav className="flex-1 overflow-y-auto py-6 px-3 space-y-1">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isActive = location.pathname.startsWith(item.path);
-            
+            const isActive = location.pathname === item.path && !new URLSearchParams(location.search).get('instance_id');
+
             return (
               <Link
                 key={item.name}
                 to={item.path}
                 className={clsx(
                   'flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-colors group justify-between',
-                  isActive 
-                    ? 'bg-primary/10 text-primary' 
+                  isActive
+                    ? 'bg-primary/10 text-primary'
                     : item.highlight
                       ? 'bg-primary border border-primary text-white hover:bg-primary-hover shadow-[0_0_15px_rgba(59,130,246,0.3)]'
                       : 'text-muted hover:bg-surface-hover hover:text-white',
@@ -98,6 +104,55 @@ export default function DashboardLayout({ children }) {
               </Link>
             );
           })}
+
+          {/* Dynamic Servers Section */}
+          {servers.length > 0 && (
+            <div className="mt-4 pt-4 border-t border-border">
+              <button
+                onClick={() => setServersExpanded(!serversExpanded)}
+                className="w-full flex items-center justify-between px-3 py-1.5 text-xs font-semibold text-muted uppercase tracking-wider hover:text-white transition-colors"
+              >
+                <span className="flex items-center"><Server className="w-3 h-3 mr-2" />Servers</span>
+                {serversExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+              </button>
+              {serversExpanded && (
+                <div className="mt-1 space-y-0.5">
+                  <Link
+                    to="/servers"
+                    className={clsx(
+                      'flex items-center pl-8 pr-3 py-1.5 rounded-lg text-xs transition-colors',
+                      location.pathname === '/servers'
+                        ? 'text-primary'
+                        : 'text-muted hover:text-white'
+                    )}
+                  >
+                    <span className="mr-1.5 text-lg leading-none">+</span> Add / Manage Servers
+                  </Link>
+                  {servers.map(server => {
+                    const instanceParam = new URLSearchParams(location.search).get('instance_id');
+                    const isSelected = location.pathname === '/logs' && instanceParam === server.instanceId;
+                    return (
+                      <Link
+                        key={server._id}
+                        to={`/logs?instance_id=${server.instanceId}`}
+                        className={clsx(
+                          'flex items-center pl-8 pr-3 py-2 rounded-lg text-sm transition-colors',
+                          isSelected
+                            ? 'bg-primary/10 text-primary'
+                            : 'text-muted hover:bg-surface-hover hover:text-white'
+                        )}
+                      >
+                        <span className={clsx('w-2 h-2 rounded-full mr-2.5 flex-shrink-0', server.status === 'running' ? 'bg-success' : 'bg-muted')} />
+                        <span className="truncate" title={server.instanceId}>
+                          {server.instanceName !== server.instanceId ? server.instanceName : server.instanceId.slice(0, 19)}
+                        </span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          )}
         </nav>
 
         <div className="p-4 border-t border-border">
@@ -127,7 +182,7 @@ export default function DashboardLayout({ children }) {
           <TerminalSquare className="w-6 h-6 text-primary mr-3" />
           <span className="text-lg font-bold text-white">Opsentra</span>
         </header>
-        
+
         <div className="flex-1 overflow-y-auto w-full no-scrollbar relative">
           <div className="p-6 md:p-8 max-w-7xl mx-auto min-h-full">
             {children || <Outlet />}
