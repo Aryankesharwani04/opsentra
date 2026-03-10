@@ -26,6 +26,9 @@ echo -e "${RESET}"
 WORKSPACE_ID="${1:-}"
 [[ -z "$WORKSPACE_ID" ]] && error "workspace_id required"
 
+# Optional second arg: API base URL (useful for local dev with a tunnel)
+API_URL="${2:-https://some-zebras-grow.loca.lt/api/v1}"
+
 [[ $EUID -ne 0 ]] && error "Run as root"
 
 source /etc/os-release
@@ -134,6 +137,14 @@ cat > "$CW_CONFIG" <<EOF
       "timestamp_format": "%Y/%m/%d %H:%M:%S",
       "timezone": "UTC",
       "retention_in_days": 90
+     },
+     {
+      "file_path": "/var/lib/docker/containers/*/*.log",
+      "log_group_name": "${LOG_GROUP_DOCKER}",
+      "log_stream_name": "${INSTANCE_ID}-docker",
+      "timestamp_format": "%Y-%m-%dT%H:%M:%S.%fZ",
+      "timezone": "UTC",
+      "retention_in_days": 90
      }
     ]
    }
@@ -161,3 +172,23 @@ echo "Instance ID: $INSTANCE_ID"
 echo "Workspace: $WORKSPACE_ID"
 echo "Log group: $LOG_GROUP_SYSTEM"
 echo ""
+
+# API_URL is already set above (from arg $2 or default)
+echo "Registering instance with Opsentra API..."
+
+REGISTER_RESPONSE=$(curl -sSf \
+  -X POST "${API_URL}/servers/register" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "instance_id": "'"${INSTANCE_ID}"'",
+    "instance_name": "'"${INSTANCE_ID}"'",
+    "workspace_id": "'"${WORKSPACE_ID}"'",
+    "region": "'"${AWS_REGION}"'"
+  }' 2>/dev/null || echo '{"error":"registration_failed"}')
+
+if echo "$REGISTER_RESPONSE" | grep -q '"status":"success"'; then
+  success "Instance registered with Opsentra successfully."
+else
+  warn "Auto-registration failed. Register manually in the Opsentra dashboard."
+  warn "Response: ${REGISTER_RESPONSE}"
+fi
