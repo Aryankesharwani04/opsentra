@@ -139,7 +139,7 @@ cat > "$CW_CONFIG" <<EOF
       "retention_in_days": 90
      },
      {
-      "file_path": "/var/lib/docker/containers/*/*.log",
+      "file_path": "/var/lib/docker/containers/*/*-json.log",
       "log_group_name": "${LOG_GROUP_DOCKER}",
       "log_stream_name": "${INSTANCE_ID}-docker",
       "timestamp_format": "%Y-%m-%dT%H:%M:%S.%fZ",
