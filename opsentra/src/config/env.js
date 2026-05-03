@@ -60,6 +60,10 @@ const envSchema = Joi.object({
 
   // Frontend
   FRONTEND_URL: Joi.string().default('http://localhost:3000'),
+
+  // AI — Gemini 2.0 Flash (optional: alerts work without it, just no AI analysis)
+  GEMINI_API_KEY: Joi.string().optional(),
+  ALERT_COOLDOWN_SECONDS: Joi.number().default(300),
 })
   .unknown(true) // allow extra env vars (e.g. PATH, HOME)
   .options({ abortEarly: false });
