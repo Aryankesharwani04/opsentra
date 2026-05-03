@@ -12,6 +12,7 @@ import ConnectAws from './pages/ConnectAws';
 import AddServer from './pages/AddServer';
 import LogsViewer from './pages/LogsViewer';
 import SetupWizard from './pages/SetupWizard';
+import AlertHistory from './pages/AlertHistory';
 
 // Auth Guard component
 const ProtectedRoute = ({ children }) => {
@@ -53,6 +54,7 @@ function App() {
           <Route path="/aws" element={<WithLayout component={ConnectAws} />} />
           <Route path="/servers" element={<WithLayout component={AddServer} />} />
           <Route path="/logs" element={<WithLayout component={LogsViewer} />} />
+          <Route path="/alerts" element={<WithLayout component={AlertHistory} />} />
           
           {/* 404 */}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />

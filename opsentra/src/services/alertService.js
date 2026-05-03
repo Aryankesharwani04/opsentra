@@ -15,6 +15,7 @@
 
 const Workspace = require('../models/Workspace');
 const User = require('../models/User');
+const AlertLog = require('../models/AlertLog');
 const { getRedisClient } = require('../config/redis');
 const { queueRawEmail } = require('../workers/emailWorker');
 const { analyseErrors } = require('./aiAnalysisService');
@@ -195,6 +196,21 @@ const fireAlerts = async (workspaceId, logDocs) => {
 
   // 7. Set cooldown so inbox is not flooded
   await setCooldown(workspaceId);
+
+  // 8. Persist alert record for history page (fire-and-forget — never blocks email)
+  AlertLog.create({
+    workspaceId,
+    errorCount: errorLogs.length,
+    emailSentTo: user.email,
+    emailQueued: true,
+    sampleMessages: errorLogs.slice(0, 3).map((l) => l.message?.slice(0, 300) ?? ''),
+    aiCause:    analysis?.cause    ?? null,
+    aiFix:      analysis?.fix      ?? null,
+    aiSeverity: analysis?.severity ?? null,
+    aiSummary:  analysis?.summary  ?? null,
+  }).catch((err) =>
+    logger.error(`[AlertService] Failed to save AlertLog: ${err.message}`),
+  );
 
   logger.info(
     `[AlertService] Alert email queued for ${user.email} ` +

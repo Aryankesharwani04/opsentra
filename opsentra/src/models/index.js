@@ -14,6 +14,7 @@ const Workspace = require('./Workspace');
 const AwsIntegration = require('./AwsIntegration');
 const ServerInstance = require('./ServerInstance');
 const LogEntry = require('./LogEntry');
+const AlertLog = require('./AlertLog');
 
 module.exports = {
   User,
@@ -23,4 +24,5 @@ module.exports = {
   AwsIntegration,
   ServerInstance,
   LogEntry,
+  AlertLog,
 };
