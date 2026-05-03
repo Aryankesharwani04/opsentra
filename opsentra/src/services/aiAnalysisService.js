@@ -95,4 +95,91 @@ const analyseErrors = async (messages) => {
   }
 };
 
-module.exports = { analyseErrors };
+/**
+ * Build the incident report prompt.
+ */
+const buildReportPrompt = ({ firedAt, errorCount, sampleMessages, aiCause, aiFix, aiSeverity }) => {
+  const logs = (sampleMessages || [])
+    .slice(0, 10)
+    .map((m, i) => `[${i + 1}] ${m.slice(0, 400)}`)
+    .join('\n');
+
+  return `You are a senior SRE engineer writing a production incident post-mortem report.
+
+INCIDENT DATA:
+- Detected at: ${new Date(firedAt).toUTCString()}
+- Total errors in batch: ${errorCount}
+- Severity: ${aiSeverity || 'unknown'}
+- Known root cause: ${aiCause || 'not yet determined'}
+- Suggested fix: ${aiFix || 'not yet determined'}
+
+SAMPLE ERROR LOGS:
+${logs}
+
+Write a complete incident post-mortem report. Respond in this exact JSON format (no markdown, no text outside JSON):
+{
+  "title": "Short incident title (max 10 words)",
+  "severity": "critical | high | medium",
+  "timeline": [
+    { "time": "HH:MM UTC", "event": "what happened at this moment" }
+  ],
+  "rootCause": "Detailed paragraph explaining the root cause",
+  "impact": "Paragraph describing what was affected and potential user impact",
+  "preventionSteps": [
+    "Step 1 description",
+    "Step 2 description",
+    "Step 3 description"
+  ],
+  "commands": [
+    { "description": "What this command does", "command": "the actual terminal command" }
+  ]
+}
+
+Rules:
+- timeline must have 3-5 entries reconstructed from the data
+- preventionSteps must have 3-5 actionable items
+- commands must have 2-4 entries
+- Be specific and technical, not generic`;
+};
+
+/**
+ * Generate a full incident post-mortem report for an alert using Gemini 2.0 Flash.
+ *
+ * @param {object} alertData - AlertLog document fields
+ * @returns {Promise<object|null>}
+ */
+const generateIncidentReport = async (alertData) => {
+  const client = getClient();
+  if (!client) {
+    logger.warn('[AIAnalysis] GEMINI_API_KEY not set — cannot generate incident report');
+    return null;
+  }
+
+  try {
+    const model = client.getGenerativeModel({ model: MODEL_NAME });
+
+    const responsePromise = model.generateContent(buildReportPrompt(alertData));
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('Gemini request timed out')), 20_000),
+    );
+
+    const result = await Promise.race([responsePromise, timeoutPromise]);
+    const text = result.response.text().trim();
+
+    const cleaned = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```$/, '').trim();
+    const parsed = JSON.parse(cleaned);
+
+    if (!parsed.title || !parsed.rootCause) {
+      logger.warn('[AIAnalysis] Incident report missing required fields');
+      return null;
+    }
+
+    logger.info(`[AIAnalysis] Incident report generated: "${parsed.title}"`);
+    return parsed;
+  } catch (err) {
+    logger.error(`[AIAnalysis] Incident report generation failed: ${err.message}`);
+    return null;
+  }
+};
+
+module.exports = { analyseErrors, generateIncidentReport };

@@ -2,6 +2,7 @@
 
 const AlertLog = require('../models/AlertLog');
 const Workspace = require('../models/Workspace');
+const { generateIncidentReport } = require('../services/aiAnalysisService');
 const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/AppError');
 const { sendSuccess } = require('../utils/apiResponse');
@@ -54,4 +55,34 @@ const getAlertHistory = catchAsync(async (req, res) => {
   });
 });
 
-module.exports = { getAlertHistory };
+/**
+ * @route  POST /api/v1/alerts/:id/report
+ * @access Protected
+ *
+ * Generates a full AI incident post-mortem report for a specific alert.
+ * Verifies the alert belongs to the caller's workspace before generating.
+ */
+const generateReport = catchAsync(async (req, res) => {
+  const workspaceId = await resolveWorkspaceId(req);
+
+  const alert = await AlertLog.findOne({
+    _id: req.params.id,
+    workspaceId,
+  }).lean();
+
+  if (!alert) throw AppError.notFound('Alert not found');
+
+  if (!process.env.GEMINI_API_KEY) {
+    throw AppError.badRequest('AI features require GEMINI_API_KEY to be configured');
+  }
+
+  const report = await generateIncidentReport(alert);
+
+  if (!report) {
+    throw AppError.internal('AI report generation failed — please try again');
+  }
+
+  sendSuccess(res, { data: report });
+});
+
+module.exports = { getAlertHistory, generateReport };

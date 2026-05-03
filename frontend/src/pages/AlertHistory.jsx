@@ -1,126 +1,314 @@
 import { useState, useEffect } from 'react';
 import api from '../lib/api';
-import { BellRing, ChevronDown, ChevronUp, RefreshCw, Bot, Terminal } from 'lucide-react';
+import {
+  BellRing, ChevronDown, ChevronUp, RefreshCw,
+  Bot, Terminal, FileText, X, Copy, Check,
+  AlertTriangle, Clock, Wrench, ShieldCheck, TerminalSquare,
+} from 'lucide-react';
 import clsx from 'clsx';
 import { formatDistanceToNow, format } from 'date-fns';
 
+// ── Severity styles ───────────────────────────────────────────────
 const SEVERITY_STYLES = {
   critical: 'text-red-400 bg-red-400/10 border-red-400/30',
   high:     'text-orange-400 bg-orange-400/10 border-orange-400/30',
   medium:   'text-yellow-400 bg-yellow-400/10 border-yellow-400/30',
 };
 
-function AlertCard({ alert }) {
-  const [expanded, setExpanded] = useState(false);
-  const hasAi = !!alert.aiCause;
-  const severityStyle = SEVERITY_STYLES[alert.aiSeverity] || SEVERITY_STYLES.high;
+// ── Incident Report Modal ─────────────────────────────────────────
+function ReportModal({ report, onClose }) {
+  const [copied, setCopied] = useState(false);
+
+  const severityStyle = SEVERITY_STYLES[report.severity] || SEVERITY_STYLES.high;
+
+  const handleCopy = () => {
+    const text = buildPlainText(report);
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    });
+  };
 
   return (
-    <div className="bg-surface border border-border rounded-xl overflow-hidden transition-all">
-      {/* Header row */}
-      <button
-        onClick={() => setExpanded(!expanded)}
-        className="w-full flex items-center justify-between px-5 py-4 hover:bg-surface-hover transition-colors text-left"
-      >
-        <div className="flex items-center gap-4 min-w-0">
-          {/* Severity / error badge */}
-          <span className={clsx(
-            'shrink-0 px-2.5 py-1 rounded-md text-xs font-bold border uppercase tracking-wide',
-            severityStyle
-          )}>
-            {alert.aiSeverity || 'error'}
-          </span>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
+      <div className="bg-[#0f0f0f] border border-border rounded-2xl w-full max-w-3xl max-h-[90vh] flex flex-col shadow-2xl">
 
-          {/* Error count */}
-          <span className="shrink-0 text-sm font-semibold text-white">
-            {alert.errorCount} error{alert.errorCount !== 1 ? 's' : ''}
-          </span>
-
-          {/* AI cause preview */}
-          {hasAi && (
-            <span className="text-sm text-muted truncate hidden sm:block">
-              {alert.aiCause}
-            </span>
-          )}
-
-          {/* AI badge */}
-          {hasAi && (
-            <span className="shrink-0 flex items-center gap-1 text-xs text-primary/70 bg-primary/10 px-2 py-0.5 rounded">
-              <Bot className="w-3 h-3" /> AI
-            </span>
-          )}
-        </div>
-
-        <div className="flex items-center gap-4 shrink-0 ml-4">
-          <div className="text-right hidden sm:block">
-            <p className="text-xs text-muted">
-              {formatDistanceToNow(new Date(alert.firedAt), { addSuffix: true })}
-            </p>
-            <p className="text-xs text-muted/50">
-              {format(new Date(alert.firedAt), 'MMM d, HH:mm:ss')}
-            </p>
-          </div>
-          {expanded
-            ? <ChevronUp className="w-4 h-4 text-muted" />
-            : <ChevronDown className="w-4 h-4 text-muted" />}
-        </div>
-      </button>
-
-      {/* Expanded detail */}
-      {expanded && (
-        <div className="border-t border-border px-5 py-4 space-y-4">
-
-          {/* AI Analysis block */}
-          {hasAi && (
-            <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
-              <p className="text-xs font-semibold text-primary/70 uppercase tracking-wider flex items-center gap-1.5">
-                <Bot className="w-3.5 h-3.5" /> AI Analysis — Gemini 2.0 Flash
-              </p>
-              {alert.aiSummary && (
-                <p className="text-sm text-gray-300">{alert.aiSummary}</p>
-              )}
-              <div>
-                <p className="text-xs text-muted uppercase mb-1">Root Cause</p>
-                <p className="text-sm text-white">{alert.aiCause}</p>
-              </div>
-              <div>
-                <p className="text-xs text-muted uppercase mb-1">Suggested Fix</p>
-                <code className="block bg-[#0A0E17] text-green-400 text-xs font-mono px-3 py-2 rounded border border-border">
-                  {alert.aiFix}
-                </code>
-              </div>
+        {/* Modal header */}
+        <div className="flex items-start justify-between p-6 border-b border-border shrink-0">
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <span className={clsx('px-2.5 py-1 rounded-md text-xs font-bold border uppercase', severityStyle)}>
+                {report.severity}
+              </span>
+              <span className="flex items-center gap-1.5 text-xs text-primary/70 bg-primary/10 px-2 py-1 rounded">
+                <Bot className="w-3 h-3" /> Gemini 2.0 Flash
+              </span>
             </div>
-          )}
+            <h2 className="text-xl font-bold text-white mt-1">{report.title}</h2>
+          </div>
+          <div className="flex items-center gap-2 shrink-0 ml-4">
+            <button
+              onClick={handleCopy}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface border border-border text-sm text-muted hover:text-white transition-colors"
+            >
+              {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
+              {copied ? 'Copied' : 'Copy'}
+            </button>
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-lg text-muted hover:text-white hover:bg-surface-hover transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
 
-          {/* Sample log messages */}
-          {alert.sampleMessages?.length > 0 && (
-            <div>
-              <p className="text-xs text-muted uppercase mb-2 flex items-center gap-1.5">
-                <Terminal className="w-3.5 h-3.5" /> Sample Logs
-              </p>
-              <div className="bg-[#0A0E17] rounded-lg border border-border p-3 space-y-1.5 font-mono text-xs">
-                {alert.sampleMessages.map((msg, i) => (
-                  <div key={i} className="flex gap-2">
-                    <span className="text-red-400 shrink-0">ERR</span>
-                    <span className="text-gray-300 break-all">{msg}</span>
+        {/* Modal body — scrollable */}
+        <div className="overflow-y-auto flex-1 p-6 space-y-6 no-scrollbar">
+
+          {/* Timeline */}
+          {report.timeline?.length > 0 && (
+            <section>
+              <SectionHeader icon={Clock} title="Timeline" />
+              <div className="space-y-2 mt-3">
+                {report.timeline.map((item, i) => (
+                  <div key={i} className="flex gap-4 items-start">
+                    <span className="shrink-0 text-xs font-mono text-primary/80 w-20 pt-0.5">{item.time}</span>
+                    <div className="flex-1 flex items-start gap-3">
+                      <div className="w-2 h-2 rounded-full bg-primary/60 mt-1.5 shrink-0" />
+                      <p className="text-sm text-gray-300">{item.event}</p>
+                    </div>
                   </div>
                 ))}
               </div>
-            </div>
+            </section>
           )}
 
-          {/* Meta */}
-          <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted pt-1">
-            <span>Email sent to: <span className="text-white">{alert.emailSentTo || '—'}</span></span>
-            <span>Queued: <span className={alert.emailQueued ? 'text-green-400' : 'text-red-400'}>{alert.emailQueued ? 'Yes' : 'No'}</span></span>
-            <span>Time: <span className="text-white">{format(new Date(alert.firedAt), 'PPpp')}</span></span>
-          </div>
+          {/* Root Cause */}
+          <section>
+            <SectionHeader icon={AlertTriangle} title="Root Cause" />
+            <p className="mt-3 text-sm text-gray-300 leading-relaxed">{report.rootCause}</p>
+          </section>
+
+          {/* Impact */}
+          {report.impact && (
+            <section>
+              <SectionHeader icon={BellRing} title="Impact" />
+              <p className="mt-3 text-sm text-gray-300 leading-relaxed">{report.impact}</p>
+            </section>
+          )}
+
+          {/* Prevention steps */}
+          {report.preventionSteps?.length > 0 && (
+            <section>
+              <SectionHeader icon={ShieldCheck} title="Prevention Steps" />
+              <ol className="mt-3 space-y-2">
+                {report.preventionSteps.map((step, i) => (
+                  <li key={i} className="flex gap-3 text-sm text-gray-300">
+                    <span className="shrink-0 w-6 h-6 rounded-full bg-primary/20 text-primary text-xs flex items-center justify-center font-bold">{i + 1}</span>
+                    {step}
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
+
+          {/* Recommended commands */}
+          {report.commands?.length > 0 && (
+            <section>
+              <SectionHeader icon={TerminalSquare} title="Recommended Commands" />
+              <div className="mt-3 space-y-3">
+                {report.commands.map((cmd, i) => (
+                  <div key={i} className="rounded-lg border border-border bg-[#0A0E17] p-3">
+                    <p className="text-xs text-muted mb-1.5">{cmd.description}</p>
+                    <code className="text-sm text-green-400 font-mono break-all">{cmd.command}</code>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
 
+function SectionHeader({ icon: Icon, title }) {
+  return (
+    <div className="flex items-center gap-2">
+      <Icon className="w-4 h-4 text-primary/70" />
+      <h3 className="text-sm font-semibold text-white uppercase tracking-wider">{title}</h3>
+    </div>
+  );
+}
+
+function buildPlainText(report) {
+  const lines = [
+    `INCIDENT REPORT — ${report.title}`,
+    `SEVERITY: ${report.severity?.toUpperCase()}`,
+    '',
+    'TIMELINE',
+    ...(report.timeline || []).map(t => `  ${t.time}  ${t.event}`),
+    '',
+    'ROOT CAUSE',
+    report.rootCause,
+    '',
+    'IMPACT',
+    report.impact,
+    '',
+    'PREVENTION STEPS',
+    ...(report.preventionSteps || []).map((s, i) => `  ${i + 1}. ${s}`),
+    '',
+    'RECOMMENDED COMMANDS',
+    ...(report.commands || []).map(c => `  # ${c.description}\n  ${c.command}`),
+    '',
+    `Generated by Opsentra + Gemini 2.0 Flash`,
+  ];
+  return lines.join('\n');
+}
+
+// ── Alert Card ────────────────────────────────────────────────────
+function AlertCard({ alert }) {
+  const [expanded, setExpanded]     = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const [report, setReport]         = useState(null);
+  const [reportError, setReportError] = useState(null);
+
+  const hasAi = !!alert.aiCause;
+  const severityStyle = SEVERITY_STYLES[alert.aiSeverity] || SEVERITY_STYLES.high;
+
+  const handleGenerateReport = async (e) => {
+    e.stopPropagation();
+    setGenerating(true);
+    setReportError(null);
+    try {
+      const res = await api.post(`/alerts/${alert._id}/report`);
+      setReport(res.data.data);
+    } catch (err) {
+      setReportError(err.response?.data?.message || 'Failed to generate report');
+    } finally {
+      setGenerating(false);
+    }
+  };
+
+  return (
+    <>
+      {report && <ReportModal report={report} onClose={() => setReport(null)} />}
+
+      <div className="bg-surface border border-border rounded-xl overflow-hidden transition-all">
+        {/* Header row */}
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="w-full flex items-center justify-between px-5 py-4 hover:bg-surface-hover transition-colors text-left"
+        >
+          <div className="flex items-center gap-4 min-w-0">
+            <span className={clsx(
+              'shrink-0 px-2.5 py-1 rounded-md text-xs font-bold border uppercase tracking-wide',
+              severityStyle,
+            )}>
+              {alert.aiSeverity || 'error'}
+            </span>
+            <span className="shrink-0 text-sm font-semibold text-white">
+              {alert.errorCount} error{alert.errorCount !== 1 ? 's' : ''}
+            </span>
+            {hasAi && (
+              <span className="text-sm text-muted truncate hidden sm:block">{alert.aiCause}</span>
+            )}
+            {hasAi && (
+              <span className="shrink-0 flex items-center gap-1 text-xs text-primary/70 bg-primary/10 px-2 py-0.5 rounded">
+                <Bot className="w-3 h-3" /> AI
+              </span>
+            )}
+          </div>
+
+          <div className="flex items-center gap-4 shrink-0 ml-4">
+            <div className="text-right hidden sm:block">
+              <p className="text-xs text-muted">{formatDistanceToNow(new Date(alert.firedAt), { addSuffix: true })}</p>
+              <p className="text-xs text-muted/50">{format(new Date(alert.firedAt), 'MMM d, HH:mm:ss')}</p>
+            </div>
+            {expanded ? <ChevronUp className="w-4 h-4 text-muted" /> : <ChevronDown className="w-4 h-4 text-muted" />}
+          </div>
+        </button>
+
+        {/* Expanded detail */}
+        {expanded && (
+          <div className="border-t border-border px-5 py-4 space-y-4">
+
+            {/* AI Analysis block */}
+            {hasAi && (
+              <div className="rounded-lg border border-primary/20 bg-primary/5 p-4 space-y-3">
+                <p className="text-xs font-semibold text-primary/70 uppercase tracking-wider flex items-center gap-1.5">
+                  <Bot className="w-3.5 h-3.5" /> AI Analysis — Gemini 2.0 Flash
+                </p>
+                {alert.aiSummary && <p className="text-sm text-gray-300">{alert.aiSummary}</p>}
+                <div>
+                  <p className="text-xs text-muted uppercase mb-1">Root Cause</p>
+                  <p className="text-sm text-white">{alert.aiCause}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-muted uppercase mb-1">Suggested Fix</p>
+                  <code className="block bg-[#0A0E17] text-green-400 text-xs font-mono px-3 py-2 rounded border border-border">
+                    {alert.aiFix}
+                  </code>
+                </div>
+              </div>
+            )}
+
+            {/* Sample logs */}
+            {alert.sampleMessages?.length > 0 && (
+              <div>
+                <p className="text-xs text-muted uppercase mb-2 flex items-center gap-1.5">
+                  <Terminal className="w-3.5 h-3.5" /> Sample Logs
+                </p>
+                <div className="bg-[#0A0E17] rounded-lg border border-border p-3 space-y-1.5 font-mono text-xs">
+                  {alert.sampleMessages.map((msg, i) => (
+                    <div key={i} className="flex gap-2">
+                      <span className="text-red-400 shrink-0">ERR</span>
+                      <span className="text-gray-300 break-all">{msg}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Meta + Generate Report button */}
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+              <div className="flex flex-wrap gap-x-6 gap-y-1 text-xs text-muted">
+                <span>Email: <span className="text-white">{alert.emailSentTo || '—'}</span></span>
+                <span>Queued: <span className={alert.emailQueued ? 'text-green-400' : 'text-red-400'}>{alert.emailQueued ? 'Yes' : 'No'}</span></span>
+                <span>Time: <span className="text-white">{format(new Date(alert.firedAt), 'PPpp')}</span></span>
+              </div>
+
+              <div className="flex flex-col items-end gap-1">
+                <button
+                  onClick={handleGenerateReport}
+                  disabled={generating}
+                  className={clsx(
+                    'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium border transition-colors',
+                    generating
+                      ? 'opacity-60 cursor-not-allowed bg-surface border-border text-muted'
+                      : 'bg-primary/10 border-primary/30 text-primary hover:bg-primary/20',
+                  )}
+                >
+                  {generating ? (
+                    <><RefreshCw className="w-4 h-4 animate-spin" /> Generating...</>
+                  ) : (
+                    <><FileText className="w-4 h-4" /> Generate Incident Report</>
+                  )}
+                </button>
+                {reportError && (
+                  <p className="text-xs text-red-400">{reportError}</p>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+// ── Main Page ─────────────────────────────────────────────────────
 export default function AlertHistory() {
   const [alerts, setAlerts]   = useState([]);
   const [loading, setLoading] = useState(true);
@@ -156,7 +344,7 @@ export default function AlertHistory() {
             Alert History
           </h1>
           <p className="text-sm text-muted mt-1 ml-10">
-            Every alert fired for your workspace — with AI analysis
+            Every alert fired for your workspace — with AI analysis &amp; incident reports
           </p>
         </div>
         <button
@@ -218,9 +406,7 @@ export default function AlertHistory() {
           >
             Previous
           </button>
-          <span className="text-sm text-muted">
-            Page {page} of {meta.totalPages}
-          </span>
+          <span className="text-sm text-muted">Page {page} of {meta.totalPages}</span>
           <button
             disabled={page >= meta.totalPages || loading}
             onClick={() => fetchAlerts(page + 1)}
