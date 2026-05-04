@@ -12,6 +12,7 @@ import {
   Lock,
   ChevronDown,
   ChevronRight,
+  BellRing,
 } from 'lucide-react';
 import clsx from 'clsx';
 import api from '../../lib/api';
@@ -19,6 +20,7 @@ import api from '../../lib/api';
 const baseNavItems = [
   { name: 'Overview', path: '/dashboard', icon: LayoutDashboard },
   { name: 'Logs Viewer', path: '/logs', icon: TerminalSquare, requiresSetup: true },
+  { name: 'Alert History', path: '/alerts', icon: BellRing, requiresSetup: true },
   { name: 'AWS Accounts', path: '/aws', icon: Cloud },
   { name: 'Servers', path: '/servers', icon: Server },
   { name: 'Setup Wizard', path: '/setup', icon: Wand2, highlight: true },
