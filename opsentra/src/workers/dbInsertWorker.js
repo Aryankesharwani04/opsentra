@@ -23,6 +23,7 @@ const {
   cacheLatestLogs,
   queueKey,
 } = require('../services/logStreamService');
+const { fireAlerts } = require('../services/alertService');
 const { getRedisClient } = require('../config/redis');
 const logger = require('../utils/logger');
 
@@ -115,6 +116,11 @@ const processWorkspaceQueue = async (workspaceId) => {
 
   // 4. Update the latest-log cache (most recent first)
   await cacheLatestLogs(workspaceId, [...publishPayloads].reverse());
+
+  // 5. Fire alert emails for ERROR/FATAL logs — non-blocking, never disrupts ingestion
+  fireAlerts(workspaceId, insertedDocs).catch((err) =>
+    logger.error(`[DbInsertWorker] Alert error for workspace ${workspaceId}: ${err.message}`),
+  );
 
   logger.info(
     `[DbInsertWorker] ✅ Workspace ${workspaceId}: inserted ${insertedDocs.length}, published ${publishPayloads.length}`,
